@@ -13,8 +13,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import MachineForm from "../components/MachineForm"; // Adjust path accordingly
-import RentProduct from "../components/RentProduct"; // Renamed from RentMachineOrder
+import MachineForm from "../components/MachineForm"; 
+import RentProduct from "../components/RentProduct";
 import { useNavigation } from "expo-router";
 import { AuthContext } from "../context/AuthContext";
 

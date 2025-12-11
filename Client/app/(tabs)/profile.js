@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AuthContext } from '../../context/AuthContext';
-import { profileInfo, profileOptions } from '../../constants/data'; // Adjust path as needed
+import { profileInfo, profileOptions } from '../../constants/data';
 
 export default function Profile() {
   const { signOut, user } = useContext(AuthContext);

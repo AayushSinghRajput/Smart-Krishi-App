@@ -1,20 +1,19 @@
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
-
 
 // Register user
 exports.register = async (req, res) => {
-  const { name, email, password, phone, role = 'user' } = req.body;
+  const { name, email, password, phone, role = "user" } = req.body;
 
   try {
     // Validate required fields
     if (!name || !email || !password || !phone) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     // Trim and sanitize inputs
@@ -26,46 +25,59 @@ exports.register = async (req, res) => {
     // Validate name
     if (trimmedName.length < 2 || !/^[a-zA-Z\s]+$/.test(trimmedName)) {
       return res.status(400).json({
-        message: 'Name must be at least 2 characters and contain only letters and spaces'
+        message:
+          "Name must be at least 2 characters and contain only letters and spaces",
       });
     }
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmedEmail)) {
-      return res.status(400).json({ message: 'Please enter a valid email address' });
+      return res
+        .status(400)
+        .json({ message: "Please enter a valid email address" });
     }
 
     // Validate password strength
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{6,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{6,}$/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
-        message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+        message:
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number",
       });
     }
 
     // Validate phone number
-    const cleanPhone = trimmedPhone.replace(/[\s\-\(\)]/g, '');
+    const cleanPhone = trimmedPhone.replace(/[\s\-\(\)]/g, "");
     const phoneRegex = /^[\+]?[1-9][\d]{6,15}$/;
     if (!phoneRegex.test(cleanPhone)) {
-      return res.status(400).json({ message: 'Please enter a valid phone number' });
+      return res
+        .status(400)
+        .json({ message: "Please enter a valid phone number" });
     }
 
     // Validate role
-    const validRoles = ['user', 'farmer'];
+    const validRoles = ["user", "farmer"];
     if (!validRoles.includes(userRole)) {
-      return res.status(400).json({ message: 'Invalid role. Role must be "user" or "farmer"' });
+      return res
+        .status(400)
+        .json({ message: 'Invalid role. Role must be "user" or "farmer"' });
     }
 
     // Check if user already exists
     const emailExists = await User.findOne({ email: trimmedEmail });
     if (emailExists) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+      return res
+        .status(400)
+        .json({ message: "User already exists with this email" });
     }
 
     const phoneExists = await User.findOne({ phone: cleanPhone });
     if (phoneExists) {
-      return res.status(400).json({ message: 'User already exists with this phone number' });
+      return res
+        .status(400)
+        .json({ message: "User already exists with this phone number" });
     }
 
     // Hash password
@@ -79,18 +91,18 @@ exports.register = async (req, res) => {
       phone: cleanPhone,
       role: userRole,
       isActive: true,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     // Add farmer-specific default profile
-    if (userRole === 'farmer') {
+    if (userRole === "farmer") {
       userData.farmerProfile = {
-        farmName: '',
-        farmLocation: '',
+        farmName: "",
+        farmLocation: "",
         cropTypes: [],
-        farmSize: '',
-        experience: '',
-        isVerified: false
+        farmSize: "",
+        experience: "",
+        isVerified: false,
       };
     }
 
@@ -100,7 +112,7 @@ exports.register = async (req, res) => {
     // Generate token
     const token = generateToken(user._id);
 
-    // Response data (omit password)
+    // Response data
     const responseData = {
       _id: user._id,
       name: user.name,
@@ -108,48 +120,56 @@ exports.register = async (req, res) => {
       phone: user.phone,
       role: user.role,
       isActive: user.isActive,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
     };
 
-    if (user.role === 'farmer') {
+    if (user.role === "farmer") {
       responseData.farmerProfile = user.farmerProfile;
     }
 
     // Send success response
     res.status(201).json({
-      message: `${userRole.charAt(0).toUpperCase() + userRole.slice(1)} registered successfully`,
+      message: `${
+        userRole.charAt(0).toUpperCase() + userRole.slice(1)
+      } registered successfully`,
       token,
-      user: responseData
+      user: responseData,
     });
-
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
 
-    if (error.name === 'ValidationError') {
-      const validationErrors = Object.values(error.errors).map(err => err.message);
+    if (error.name === "ValidationError") {
+      const validationErrors = Object.values(error.errors).map(
+        (err) => err.message
+      );
       return res.status(400).json({
-        message: 'Validation failed',
-        errors: validationErrors
+        message: "Validation failed",
+        errors: validationErrors,
       });
     }
 
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0];
-      const fieldName = field === 'email' ? 'Email' :
-                        field === 'phone' ? 'Phone number' :
-                        field.charAt(0).toUpperCase() + field.slice(1);
+      const fieldName =
+        field === "email"
+          ? "Email"
+          : field === "phone"
+          ? "Phone number"
+          : field.charAt(0).toUpperCase() + field.slice(1);
       return res.status(400).json({
-        message: `${fieldName} already exists`
+        message: `${fieldName} already exists`,
       });
     }
 
     return res.status(500).json({
-      message: 'Server error during registration',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      message: "Server error during registration",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
     });
   }
 };
-
 
 //    Login user
 exports.login = async (req, res) => {
@@ -157,25 +177,25 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
     res.status(200).json({
-  message: 'Login successful',
-  token: generateToken(user._id),
-  user: {
-    _id: user._id,
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    role: user.role
-  }
-});
-
+      message: "Login successful",
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };
 

@@ -13,7 +13,7 @@ export const listProduct = async (formData) => {
         // Set loading state to true if needed (for example, in your component)
         setLoading(true);
 
-        const response = await fetch("https://x8ki-letl-twmt.n7.xano.io/api:MhI4A9Qg/marketplace_product", {
+        const response = await fetch("http://192.168.1.66:5000/api/products", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

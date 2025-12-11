@@ -5,7 +5,7 @@ import RentCrop from '../RentCrop';
 import RentMachine from '../RentMachine';
 
 export default function MarketScreen() {
-  const [selected, setSelected] = useState('produce'); // default to produce/crop
+  const [selected, setSelected] = useState('produce'); 
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -48,7 +48,7 @@ export default function MarketScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff', // or your background color
+    backgroundColor: '#fff', 
   },
   tabHeader: {
     flexDirection: 'row',

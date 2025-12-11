@@ -1,61 +1,45 @@
-import React, { useState, useContext } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  ActivityIndicator, 
-  Alert, 
-  KeyboardAvoidingView, 
-  Platform, 
-  Image, 
-  ScrollView 
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { AuthContext } from '../../context/AuthContext';
-import Toast from 'react-native-toast-message';
+import { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  ScrollView,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { AuthContext } from "../../context/AuthContext";
+import Toast from "react-native-toast-message";
+import { loginUser } from "../../services/authService";
 
 export default function Login() {
   const router = useRouter();
   const { signIn } = useContext(AuthContext);
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [errors, setErrors] = useState({});
 
   const updateFormData = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      newErrors.email = 'Please enter a valid email address';
-    }
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()))
+      newErrors.email = "Please enter a valid email address";
 
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (formData.password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -65,82 +49,78 @@ export default function Login() {
     if (!validateForm()) return;
 
     setLoading(true);
-
     try {
-      console.log('Attempting to login user...'); // Debug log
-      
-      const API_URL = __DEV__ 
-        ? 'http://192.168.18.23:5000/api/auth/login'
-        : 'https://192.168.18.23:5000/api/auth/login';
+      const { status, data } = await loginUser(
+        formData.email,
+        formData.password
+      );
 
-      console.log('Login API URL:', API_URL); // Debug log
-
-      const requestBody = {
-        email: formData.email.toLowerCase().trim(),
-        password: formData.password
-      };
-
-      console.log('Login request body:', { ...requestBody, password: '***' }); // Debug log (hide password)
-
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      console.log('Login response status:', response.status); // Debug log
-
-      const data = await response.json();
-      console.log('Login response data:', data); // Debug log
-
-      if (response.ok) {
+      if (status >= 200 && status < 300) {
         Toast.show({
-          type: 'success',
-          text1: 'Login Successful',
-          text2: `Welcome back, ${data.user?.name || 'User'}!`,
+          type: "success",
+          text1: "Login Successful",
+          text2: `Welcome back, ${data.user?.name || "User"}!`,
           visibilityTime: 3000,
           autoHide: true,
           topOffset: 50,
         });
-        
-        // Handle different possible token field names from backend
+
         const token = data.token || data.authToken || data.accessToken;
-        
-        if (!token) {
-          throw new Error('No authentication token received');
-        }
+        if (!token) throw new Error("No authentication token received");
 
         await signIn(token, data.user);
-        router.replace('/(tabs)/home');
+        router.replace("/(tabs)/home");
       } else {
-        // Handle specific error cases
-        if (response.status === 401) {
-          Alert.alert('Login Failed', 'Invalid email or password. Please try again.');
-        } else if (response.status === 404) {
-          Alert.alert('Account Not Found', 'No account found with this email address.');
-        } else if (response.status === 403) {
-          Alert.alert('Account Disabled', 'Your account has been disabled. Please contact support.');
-        } else {
-          Alert.alert('Login Failed', data.message || 'An error occurred during login.');
-        }
+        if (status === 401)
+          Toast.show({
+            type: "error",
+            text1: "Login Failed",
+            text2: "Invalid email or password.",
+          });
+        else if (status === 404)
+          Toast.show({
+            type: "error",
+            text1: "Account Not Found",
+            text2: "No account Found with this email.",
+          });
+        else if (status === 403)
+          Toast.show({
+            type: "error",
+            text1: "Account Disabled",
+            text2: "Your account has been disabled. Please Contact Support.",
+          });
+        else
+          Toast.show({
+            type: "error",
+            text1: "Login Failed",
+            text2: data.message || "An error occured.",
+          });
       }
     } catch (error) {
-      console.error('Login error details:', error); // Enhanced debug log
-      
-      // Handle different types of errors
-      if (error.message.includes('Network request failed') || error.message.includes('fetch')) {
-        Alert.alert('Connection Error', 
-          'Unable to connect to the server. Please check:\n' +
-          '• Your internet connection\n' +
-          '• Server is running on port 5000'
-        );
-      } else if (error.message.includes('JSON')) {
-        Alert.alert('Server Error', 'Server returned invalid response. Please try again.');
+      console.error("Login error details:", error);
+      if (
+        error.message.includes("Network request failed") ||
+        error.message.includes("fetch")
+      ) {
+        Toast.show({
+          type: "error",
+          text1: "Connection Error",
+          text2:
+            "Unable to connect to the server. Please check your connection and server status.",
+        });
+      } else if (error.message.includes("JSON")) {
+        Toast.show({
+          type: "error",
+          text1: "Server Error",
+          text2: "Server returned invalid response. Please try again.",
+        });
       } else {
-        Alert.alert('Login Error', error.message || 'Something went wrong. Please try again.');
+        Toast.show({
+          type: "error",
+          text1: "Login Error",
+          text2: error.message || "Something went wrong.",
+        });
+        Alert.alert("Login Error", error.message || "Something went wrong.");
       }
     } finally {
       setLoading(false);
@@ -149,36 +129,34 @@ export default function Login() {
 
   const handleForgotPassword = () => {
     if (!formData.email.trim()) {
-      Alert.alert('Email Required', 'Please enter your email address first.');
+      Alert.alert("Email Required", "Please enter your email address first.");
       return;
     }
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
       return;
     }
 
-    // TODO: Implement forgot password functionality
     Alert.alert(
-      'Forgot Password', 
-      'Password reset functionality will be implemented soon. Please contact support for assistance.',
-      [{ text: 'OK' }]
+      "Forgot Password",
+      "Password reset functionality will be implemented soon. Please contact support for assistance.",
+      [{ text: "OK" }]
     );
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.header}>
-          <Image 
-            source={require('../../assets/images/logo.png')}
+          <Image
+            source={require("../../assets/images/logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -187,7 +165,6 @@ export default function Login() {
         </View>
 
         <View style={styles.formContainer}>
-          {/* Email Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email Address</Text>
             <TextInput
@@ -198,42 +175,49 @@ export default function Login() {
               autoCorrect={false}
               autoComplete="email"
               value={formData.email}
-              onChangeText={(value) => updateFormData('email', value)}
+              onChangeText={(value) => updateFormData("email", value)}
               style={[styles.input, errors.email && styles.inputError]}
               maxLength={100}
             />
-            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            {errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
           </View>
 
-          {/* Password Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
-            <View style={[styles.passwordContainer, errors.password && styles.inputError]}>
+            <View
+              style={[
+                styles.passwordContainer,
+                errors.password && styles.inputError,
+              ]}
+            >
               <TextInput
                 placeholder="Enter your password"
                 placeholderTextColor="#999"
                 secureTextEntry={!passwordVisible}
                 autoComplete="password"
                 value={formData.password}
-                onChangeText={(value) => updateFormData('password', value)}
+                onChangeText={(value) => updateFormData("password", value)}
                 style={styles.passwordInput}
                 maxLength={50}
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.visibilityToggle}
                 onPress={() => setPasswordVisible(!passwordVisible)}
                 activeOpacity={0.7}
               >
                 <Text style={styles.visibilityText}>
-                  {passwordVisible ? '👁️' : '👁️‍🗨️'}
+                  {passwordVisible ? "👁️" : "👁️‍🗨️"}
                 </Text>
               </TouchableOpacity>
             </View>
-            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
           </View>
 
-          {/* Forgot Password */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.forgotPassword}
             onPress={handleForgotPassword}
             activeOpacity={0.7}
@@ -241,40 +225,38 @@ export default function Login() {
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          {/* Login Button */}
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleLogin} 
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleLogin}
             disabled={loading}
             activeOpacity={0.8}
           >
             {loading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator color="#fff" size="small" />
-                <Text style={[styles.buttonText, { marginLeft: 8 }]}>Signing In...</Text>
+                <Text style={[styles.buttonText, { marginLeft: 8 }]}>
+                  Signing In...
+                </Text>
               </View>
             ) : (
               <Text style={styles.buttonText}>Sign In</Text>
             )}
           </TouchableOpacity>
 
-          {/* Divider */}
           <View style={styles.dividerContainer}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>or</Text>
             <View style={styles.dividerLine} />
           </View>
 
-          {/* Register Button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.secondaryButton}
-            onPress={() => router.push('/(auth)/Register')}
+            onPress={() => router.push("/(auth)/Register")}
             activeOpacity={0.8}
           >
             <Text style={styles.secondaryButtonText}>Create New Account</Text>
           </TouchableOpacity>
 
-          {/* Additional Links */}
           <View style={styles.footerLinks}>
             <TouchableOpacity activeOpacity={0.7}>
               <Text style={styles.footerLinkText}>Terms of Service</Text>
@@ -294,17 +276,17 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   scrollContainer: {
     flexGrow: 1,
     paddingBottom: 40,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 60,
     paddingBottom: 30,
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     marginBottom: 20,
@@ -314,18 +296,18 @@ const styles = StyleSheet.create({
     height: 80,
     marginBottom: 20,
     borderRadius: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 10,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: 'white',
+    fontWeight: "700",
+    color: "white",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#e8f5e9',
+    color: "#e8f5e9",
   },
   formContainer: {
     paddingHorizontal: 24,
@@ -336,44 +318,44 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#2e7d32',
+    fontWeight: "600",
+    color: "#2e7d32",
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: "#f8fafc",
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 12,
     fontSize: 16,
-    color: '#1a202c',
+    color: "#1a202c",
     borderWidth: 1,
-    borderColor: '#e8f5e9',
+    borderColor: "#e8f5e9",
   },
   inputError: {
-    borderColor: '#e74c3c',
+    borderColor: "#e74c3c",
     borderWidth: 1.5,
   },
   errorText: {
-    color: '#e74c3c',
+    color: "#e74c3c",
     fontSize: 14,
     marginTop: 6,
     marginLeft: 4,
   },
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#e8f5e9',
+    borderColor: "#e8f5e9",
     borderRadius: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: "#f8fafc",
   },
   passwordInput: {
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#1a202c',
+    color: "#1a202c",
   },
   visibilityToggle: {
     padding: 12,
@@ -383,23 +365,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   forgotPassword: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     marginTop: 8,
     paddingVertical: 4,
   },
   forgotPasswordText: {
-    color: '#4CAF50',
+    color: "#4CAF50",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#388E3C',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#388E3C",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -410,58 +392,58 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 16,
   },
   loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 24,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e8f5e9',
+    backgroundColor: "#e8f5e9",
   },
   dividerText: {
     paddingHorizontal: 12,
-    color: '#6c757d',
+    color: "#6c757d",
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   secondaryButton: {
     borderWidth: 1,
-    borderColor: '#4CAF50',
+    borderColor: "#4CAF50",
     paddingVertical: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    backgroundColor: '#f8fffe',
+    alignItems: "center",
+    backgroundColor: "#f8fffe",
     minHeight: 52,
   },
   secondaryButtonText: {
-    color: '#4CAF50',
-    fontWeight: '600',
+    color: "#4CAF50",
+    fontWeight: "600",
     fontSize: 16,
   },
   footerLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 24,
     paddingTop: 20,
   },
   footerLinkText: {
-    color: '#6c757d',
+    color: "#6c757d",
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   footerDivider: {
-    color: '#6c757d',
+    color: "#6c757d",
     fontSize: 12,
     marginHorizontal: 8,
   },

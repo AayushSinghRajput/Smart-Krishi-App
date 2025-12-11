@@ -1,8 +1,22 @@
 // components/EditProductForm.js
 import React, { useState, useEffect } from "react";
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from "react-native";
 
-export default function EditProductForm({ visible, onClose, product, onSubmit }) {
+export default function EditProductForm({
+  visible,
+  onClose,
+  product,
+  onSubmit,
+}) {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -10,18 +24,18 @@ export default function EditProductForm({ visible, onClose, product, onSubmit })
       setFormData({
         name: product.name,
         description: product.desc,
-        price: product.price.replace(/[^0-9.]/g, ''),
+        price: product.price.replace(/[^0-9.]/g, ""),
         quantity: product.available.toString(),
         unit: product.unit,
         location: product.location,
         delivery_home: product.deliveryHome,
-        delivery_pickup: product.deliveryPickup
+        delivery_pickup: product.deliveryPickup,
       });
     }
   }, [product]);
 
   const handleChange = (key, value) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = () => {
@@ -82,7 +96,10 @@ export default function EditProductForm({ visible, onClose, product, onSubmit })
               <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Update</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={onClose}
+              >
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
             </View>
@@ -95,27 +112,47 @@ export default function EditProductForm({ visible, onClose, product, onSubmit })
 
 const styles = StyleSheet.create({
   modalOverlay: {
-    flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", padding: 20,
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    padding: 20,
   },
   modalContent: {
-    backgroundColor: "#fff", borderRadius: 10, padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
   },
   title: {
-    fontSize: 18, fontWeight: "bold", marginBottom: 10,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   input: {
-    borderWidth: 1, borderColor: "#ccc", borderRadius: 5, padding: 10, marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
   },
   rowButtons: {
-    flexDirection: "row", justifyContent: "space-between",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   button: {
-    flex: 1, backgroundColor: "#4CAF50", padding: 10, marginRight: 5, borderRadius: 5, alignItems: "center",
+    flex: 1,
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    marginRight: 5,
+    borderRadius: 5,
+    alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: "#e74c3c", marginLeft: 5, marginRight: 0,
+    backgroundColor: "#e74c3c",
+    marginLeft: 5,
+    marginRight: 0,
   },
   buttonText: {
-    color: "#fff", fontWeight: "bold",
+    color: "#fff",
+    fontWeight: "bold",
   },
 });

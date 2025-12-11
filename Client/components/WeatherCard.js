@@ -1,24 +1,31 @@
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Image, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getWeather, getWeatherForecast } from '../services/weatherService';
-import { translateWeather } from '../constants/weatherTranslations';
-import { toNepaliDigits } from '../constants/numberTranslator';
+import { getWeather, getWeatherForecast } from "../services/weatherService";
+import { translateWeather } from "../constants/weatherTranslations";
+import { toNepaliDigits } from "../constants/numberTranslator";
 
 const getTimeLabel = (dtStr, language) => {
   const hour = new Date(dtStr).getHours();
   const currentHour = new Date().getHours();
 
-  let label = '';
-  if (hour === currentHour) label = 'Now';
-  else if (hour === 0) label = '12 AM';
+  let label = "";
+  if (hour === currentHour) label = "Now";
+  else if (hour === 0) label = "12 AM";
   else if (hour < 12) label = `${hour} AM`;
-  else if (hour === 12) label = '12 PM';
+  else if (hour === 12) label = "12 PM";
   else label = `${hour - 12} PM`;
 
-  if (language === 'NP' && label !== 'Now') {
-    const [hourPart, meridiem] = label.split(' ');
+  if (language === "NP" && label !== "Now") {
+    const [hourPart, meridiem] = label.split(" ");
     const nepaliHour = toNepaliDigits(hourPart, language);
     return `${nepaliHour} ${meridiem}`;
   }
@@ -55,8 +62,8 @@ export default function WeatherCard() {
         setWeather(current);
         setForecast(filteredForecast);
       } catch (err) {
-        console.error('Weather fetch error:', err);
-        setError('❌ Failed to load weather data');
+        console.error("Weather fetch error:", err);
+        setError("❌ Failed to load weather data");
       }
     };
 
@@ -102,17 +109,17 @@ export default function WeatherCard() {
           </View>
           <View style={styles.headerText}>
             <Text style={styles.title}>
-              {language === 'EN' ? 'Weather Forecast' : 'मौसम पूर्वानुमान'}
+              {language === "EN" ? "Weather Forecast" : "मौसम पूर्वानुमान"}
             </Text>
             <Text style={styles.subtitle}>
-              {language === 'EN' ? 'Today, Lalitpur' : 'आज, ललितपुर'}
+              {language === "EN" ? "Today, Lalitpur" : "आज, ललितपुर"}
             </Text>
           </View>
         </View>
-        
+
         <TouchableOpacity style={styles.viewMoreButton}>
           <Text style={styles.viewMoreText}>
-            {language === 'EN' ? 'View More' : 'थप हेर्नुहोस्'}
+            {language === "EN" ? "View More" : "थप हेर्नुहोस्"}
           </Text>
           <Ionicons name="chevron-forward" size={14} color="#2196F3" />
         </TouchableOpacity>
@@ -136,7 +143,7 @@ export default function WeatherCard() {
       {/* Forecast Section */}
       <View style={styles.forecastSection}>
         <Text style={styles.forecastTitle}>
-          {language === 'EN' ? 'Today\'s Forecast' : 'आजको पूर्वानुमान'}
+          {language === "EN" ? "Today's Forecast" : "आजको पूर्वानुमान"}
         </Text>
         <View style={styles.forecastContainer}>
           {forecast.map((item, index) => (
@@ -165,33 +172,33 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 20,
     marginVertical: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   iconContainer: {
     width: 40,
     height: 40,
     borderRadius: 10,
-    backgroundColor: '#2196F3',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#2196F3",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   headerText: {
@@ -199,35 +206,35 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
+    fontWeight: "600",
+    color: "#1a1a1a",
     marginBottom: 2,
   },
   subtitle: {
     fontSize: 13,
-    color: '#666',
+    color: "#666",
   },
   viewMoreButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F8FF',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F8FF",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
   },
   viewMoreText: {
     fontSize: 13,
-    color: '#2196F3',
-    fontWeight: '500',
+    color: "#2196F3",
+    fontWeight: "500",
     marginRight: 4,
   },
   currentWeather: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 24,
     paddingVertical: 16,
-    backgroundColor: '#F8FAFE',
+    backgroundColor: "#F8FAFE",
     borderRadius: 12,
     paddingHorizontal: 16,
   },
@@ -236,17 +243,17 @@ const styles = StyleSheet.create({
   },
   temperature: {
     fontSize: 48,
-    fontWeight: '700',
-    color: '#1a1a1a',
+    fontWeight: "700",
+    color: "#1a1a1a",
     marginBottom: 4,
   },
   condition: {
     fontSize: 15,
-    color: '#666',
-    fontWeight: '500',
+    color: "#666",
+    fontWeight: "500",
   },
   weatherIconContainer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   weatherIcon: {
     width: 80,
@@ -257,18 +264,18 @@ const styles = StyleSheet.create({
   },
   forecastTitle: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1a1a',
+    fontWeight: "600",
+    color: "#1a1a1a",
     marginBottom: 16,
   },
   forecastContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   forecastItem: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    backgroundColor: '#FAFBFC',
+    backgroundColor: "#FAFBFC",
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 12,
@@ -276,8 +283,8 @@ const styles = StyleSheet.create({
   },
   forecastTime: {
     fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
+    color: "#666",
+    fontWeight: "500",
     marginBottom: 8,
   },
   forecastIcon: {
@@ -287,18 +294,18 @@ const styles = StyleSheet.create({
   },
   forecastTemp: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1a1a1a',
+    fontWeight: "600",
+    color: "#1a1a1a",
   },
   loadingCard: {
     marginHorizontal: 20,
     marginVertical: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -307,18 +314,18 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+    color: "#666",
+    textAlign: "center",
   },
   errorCard: {
     marginHorizontal: 20,
     marginVertical: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -327,7 +334,7 @@ const styles = StyleSheet.create({
   errorText: {
     marginTop: 12,
     fontSize: 14,
-    color: '#F44336',
-    textAlign: 'center',
+    color: "#F44336",
+    textAlign: "center",
   },
 });

@@ -17,16 +17,13 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome5 } from "@expo/vector-icons";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const categoryOptions = ["Vegetables", "Fruits", "Grains"];
 
 // Backend API configuration
-const API_BASE_URL = "http://192.168.18.23:5000"; // Replace with your actual backend URL
-// For Android emulator, use: http://10.0.2.2:5000
-// For iOS simulator, use: http://localhost:5000
-// For physical device, use your computer's IP address
+const API_BASE_URL = "http://192.168.1.66:5000";
 
 export default function CropForm({ visible, onClose, onSubmit }) {
   const [productName, setProductName] = useState("");
@@ -58,7 +55,7 @@ export default function CropForm({ visible, onClose, onSubmit }) {
           toValue: 1,
           duration: 300,
           useNativeDriver: true,
-        })
+        }),
       ]).start();
     } else {
       // Reset form when modal closes
@@ -77,7 +74,7 @@ export default function CropForm({ visible, onClose, onSubmit }) {
     setDescription("");
     setImage(null);
     setIsSubmitting(false);
-    
+
     // Reset animations
     slideAnim.setValue(300);
     fadeAnim.setValue(0);
@@ -86,7 +83,10 @@ export default function CropForm({ visible, onClose, onSubmit }) {
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission Denied", "You need to grant gallery permissions to select images.");
+      Alert.alert(
+        "Permission Denied",
+        "You need to grant gallery permissions to select images."
+      );
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -95,9 +95,9 @@ export default function CropForm({ visible, onClose, onSubmit }) {
       allowsEditing: true,
       aspect: [1, 1],
     });
-    
+
     console.log("Image picker result:", result);
-    
+
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const imageUri = result.assets[0].uri;
       console.log("Setting image URI:", imageUri);
@@ -108,7 +108,10 @@ export default function CropForm({ visible, onClose, onSubmit }) {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission Denied", "You need to grant camera permissions to take photos.");
+      Alert.alert(
+        "Permission Denied",
+        "You need to grant camera permissions to take photos."
+      );
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -116,9 +119,9 @@ export default function CropForm({ visible, onClose, onSubmit }) {
       allowsEditing: true,
       aspect: [1, 1],
     });
-    
+
     console.log("Camera result:", result);
-    
+
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const imageUri = result.assets[0].uri;
       console.log("Setting camera image URI:", imageUri);
@@ -129,76 +132,89 @@ export default function CropForm({ visible, onClose, onSubmit }) {
   // Function to create FormData for backend submission
   const createFormData = () => {
     const formData = new FormData();
-    
+
     // Add text fields
-    formData.append('productName', productName.trim());
-    formData.append('category', category);
-    formData.append('quantity', quantity);
-    formData.append('price', pricePerUnit);
-    formData.append('location', location.trim());
-    formData.append('description', description.trim() || `Fresh ${category.toLowerCase()} from local farm`);
-    
+    formData.append("productName", productName.trim());
+    formData.append("category", category);
+    formData.append("quantity", quantity);
+    formData.append("price", pricePerUnit);
+    formData.append("location", location.trim());
+    formData.append(
+      "description",
+      description.trim() || `Fresh ${category.toLowerCase()} from local farm`
+    );
+
     // Handle delivery options
-    let deliveryOption = '';
+    let deliveryOption = "";
     if (deliveryHome && deliveryPickup) {
-      deliveryOption = 'both';
+      deliveryOption = "both";
     } else if (deliveryHome) {
-      deliveryOption = 'home_delivery';
+      deliveryOption = "home_delivery";
     } else if (deliveryPickup) {
-      deliveryOption = 'self_pickup';
+      deliveryOption = "self_pickup";
     }
-    formData.append('deliveryOption', deliveryOption);
-    
+    formData.append("deliveryOption", deliveryOption);
+
     // Add image if exists
     if (image) {
-      const imageUri = Platform.OS === 'ios' ? image.replace('file://', '') : image;
+      const imageUri =
+        Platform.OS === "ios" ? image.replace("file://", "") : image;
       const imageName = `product_${Date.now()}.jpg`;
-      
-      formData.append('productImage', {
+
+      formData.append("productImage", {
         uri: imageUri,
-        type: 'image/jpeg',
+        type: "image/jpeg",
         name: imageName,
       });
     }
-    
+
     return formData;
   };
 
   // Function to submit data to backend
   const submitToBackend = async (formData) => {
     try {
-      console.log('Submitting to backend...');
-      
+      console.log("Submitting to backend...");
+
       const response = await fetch(`${API_BASE_URL}/api/products`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
-      console.log('Response status:', response.status);
-      
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
         const errorData = await response.json();
-        console.log('Error response:', errorData);
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        console.log("Error response:", errorData);
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
       }
 
       const result = await response.json();
-      console.log('Success response:', result);
-      
+      console.log("Success response:", result);
+
       return result;
     } catch (error) {
-      console.error('Backend submission error:', error);
-      
+      console.error("Backend submission error:", error);
+
       // Handle different types of errors
-      if (error.message.includes('Network request failed') || error.message.includes('fetch')) {
-        throw new Error('Network error. Please check your internet connection and try again.');
-      } else if (error.message.includes('Validation Error')) {
+      if (
+        error.message.includes("Network request failed") ||
+        error.message.includes("fetch")
+      ) {
+        throw new Error(
+          "Network error. Please check your internet connection and try again."
+        );
+      } else if (error.message.includes("Validation Error")) {
         throw new Error(error.message);
       } else {
-        throw new Error(error.message || 'Failed to submit product. Please try again.');
+        throw new Error(
+          error.message || "Failed to submit product. Please try again."
+        );
       }
     }
   };
@@ -207,37 +223,41 @@ export default function CropForm({ visible, onClose, onSubmit }) {
     // Validation
     if (!productName.trim()) {
       Alert.alert("Validation Error", "Please enter product name", [
-        { text: "OK", style: "default" }
+        { text: "OK", style: "default" },
       ]);
       return;
     }
-    
+
     const quantityNum = Number(quantity);
     if (!quantity || isNaN(quantityNum) || quantityNum <= 20) {
-      Alert.alert("Validation Error", "Quantity must be a number greater than 20", [
-        { text: "OK", style: "default" }
-      ]);
+      Alert.alert(
+        "Validation Error",
+        "Quantity must be a number greater than 20",
+        [{ text: "OK", style: "default" }]
+      );
       return;
     }
-    
+
     if (!pricePerUnit || isNaN(Number(pricePerUnit))) {
       Alert.alert("Validation Error", "Please enter valid price per unit", [
-        { text: "OK", style: "default" }
+        { text: "OK", style: "default" },
       ]);
       return;
     }
-    
+
     if (!location.trim()) {
       Alert.alert("Validation Error", "Please enter location", [
-        { text: "OK", style: "default" }
+        { text: "OK", style: "default" },
       ]);
       return;
     }
 
     if (!deliveryHome && !deliveryPickup) {
-      Alert.alert("Validation Error", "Please select at least one delivery option", [
-        { text: "OK", style: "default" }
-      ]);
+      Alert.alert(
+        "Validation Error",
+        "Please select at least one delivery option",
+        [{ text: "OK", style: "default" }]
+      );
       return;
     }
 
@@ -246,16 +266,16 @@ export default function CropForm({ visible, onClose, onSubmit }) {
     try {
       // Create form data for backend submission
       const formData = createFormData();
-      
+
       // Submit to backend
       const result = await submitToBackend(formData);
-      
+
       // Show success toast
       Toast.show({
-        type: 'success',
-        position: 'bottom',
-        text1: '✅ Product Listed Successfully!',
-        text2: 'Your product is now available for buyers to see.',
+        type: "success",
+        position: "bottom",
+        text1: "✅ Product Listed Successfully!",
+        text2: "Your product is now available for buyers to see.",
         visibilityTime: 4000,
         autoHide: true,
         topOffset: 60,
@@ -274,33 +294,35 @@ export default function CropForm({ visible, onClose, onSubmit }) {
           location: location.trim(),
           delivery_home: deliveryHome,
           delivery_pickup: deliveryPickup,
-          description: description.trim() || `Fresh ${category.toLowerCase()} from local farm`,
-          image_url: result.data.productImage ? `${API_BASE_URL}/${result.data.productImage}` : image,
+          description:
+            description.trim() ||
+            `Fresh ${category.toLowerCase()} from local farm`,
+          image_url: result.data.productImage
+            ? `${API_BASE_URL}/${result.data.productImage}`
+            : image,
           createdAt: result.data.createdAt,
           updatedAt: result.data.updatedAt,
         };
-        
+
         await onSubmit(localFormData);
       }
 
       // Close the form after successful submission
       closeModal();
-      
     } catch (error) {
-      console.error('Error submitting product:', error);
-      
+      console.error("Error submitting product:", error);
+
       // Show error toast
       Toast.show({
-        type: 'error',
-        position: 'bottom',
-        text1: '❌ Listing Failed',
-        text2: error.message || 'Something went wrong. Please try again later.',
+        type: "error",
+        position: "bottom",
+        text1: "❌ Listing Failed",
+        text2: error.message || "Something went wrong. Please try again later.",
         visibilityTime: 6000,
         autoHide: true,
         topOffset: 60,
         bottomOffset: 40,
       });
-      
     } finally {
       setIsSubmitting(false);
     }
@@ -318,7 +340,7 @@ export default function CropForm({ visible, onClose, onSubmit }) {
         toValue: 0,
         duration: 250,
         useNativeDriver: true,
-      })
+      }),
     ]).start(() => {
       onClose();
     });
@@ -331,10 +353,10 @@ export default function CropForm({ visible, onClose, onSubmit }) {
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.keyboardContainer}
         >
-          <Animated.View 
+          <Animated.View
             style={[
-              styles.modalContent, 
-              { transform: [{ translateY: slideAnim }] }
+              styles.modalContent,
+              { transform: [{ translateY: slideAnim }] },
             ]}
           >
             {/* Header */}
@@ -348,7 +370,7 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               </TouchableOpacity>
             </View>
 
-            <ScrollView 
+            <ScrollView
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               style={styles.scrollContent}
@@ -356,10 +378,14 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               {/* Product Name */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>
-                  <FontAwesome5 name="apple-alt" size={14} color="#4CAF50" /> Product Name
+                  <FontAwesome5 name="apple-alt" size={14} color="#4CAF50" />{" "}
+                  Product Name
                 </Text>
                 <TextInput
-                  style={[styles.input, productName ? styles.inputFilled : null]}
+                  style={[
+                    styles.input,
+                    productName ? styles.inputFilled : null,
+                  ]}
                   placeholder="e.g., Fresh Tomatoes"
                   value={productName}
                   onChangeText={setProductName}
@@ -371,7 +397,8 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               {/* Category */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>
-                  <FontAwesome5 name="list" size={14} color="#4CAF50" /> Category
+                  <FontAwesome5 name="list" size={14} color="#4CAF50" />{" "}
+                  Category
                 </Text>
                 <View style={styles.pickerWrapper}>
                   <Picker
@@ -392,7 +419,8 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               <View style={styles.rowContainer}>
                 <View style={[styles.inputGroup, styles.halfWidth]}>
                   <Text style={styles.label}>
-                    <FontAwesome5 name="weight" size={14} color="#4CAF50" /> Quantity (kg)
+                    <FontAwesome5 name="weight" size={14} color="#4CAF50" />{" "}
+                    Quantity (kg)
                   </Text>
                   <TextInput
                     style={[styles.input, quantity ? styles.inputFilled : null]}
@@ -406,10 +434,14 @@ export default function CropForm({ visible, onClose, onSubmit }) {
 
                 <View style={[styles.inputGroup, styles.halfWidth]}>
                   <Text style={styles.label}>
-                    <FontAwesome5 name="rupee-sign" size={14} color="#4CAF50" /> Price (₹/kg)
+                    <FontAwesome5 name="rupee-sign" size={14} color="#4CAF50" />{" "}
+                    Price (₹/kg)
                   </Text>
                   <TextInput
-                    style={[styles.input, pricePerUnit ? styles.inputFilled : null]}
+                    style={[
+                      styles.input,
+                      pricePerUnit ? styles.inputFilled : null,
+                    ]}
                     placeholder="20"
                     keyboardType="numeric"
                     value={pricePerUnit}
@@ -422,7 +454,12 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               {/* Location */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>
-                  <FontAwesome5 name="map-marker-alt" size={14} color="#4CAF50" /> Location
+                  <FontAwesome5
+                    name="map-marker-alt"
+                    size={14}
+                    color="#4CAF50"
+                  />{" "}
+                  Location
                 </Text>
                 <TextInput
                   style={[styles.input, location ? styles.inputFilled : null]}
@@ -436,50 +473,75 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               {/* Delivery Options */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>
-                  <FontAwesome5 name="truck" size={14} color="#4CAF50" /> Delivery Options
+                  <FontAwesome5 name="truck" size={14} color="#4CAF50" />{" "}
+                  Delivery Options
                 </Text>
                 <View style={styles.deliveryContainer}>
-                  <TouchableOpacity 
-                    style={[styles.deliveryOption, deliveryHome && styles.deliveryOptionActive]}
+                  <TouchableOpacity
+                    style={[
+                      styles.deliveryOption,
+                      deliveryHome && styles.deliveryOptionActive,
+                    ]}
                     onPress={() => setDeliveryHome(!deliveryHome)}
                   >
                     <View style={styles.deliveryOptionContent}>
-                      <FontAwesome5 
-                        name="home" 
-                        size={16} 
-                        color={deliveryHome ? "#fff" : "#4CAF50"} 
+                      <FontAwesome5
+                        name="home"
+                        size={16}
+                        color={deliveryHome ? "#fff" : "#4CAF50"}
                       />
-                      <Text style={[
-                        styles.deliveryOptionText, 
-                        deliveryHome && styles.deliveryOptionTextActive
-                      ]}>
+                      <Text
+                        style={[
+                          styles.deliveryOptionText,
+                          deliveryHome && styles.deliveryOptionTextActive,
+                        ]}
+                      >
                         Home Delivery
                       </Text>
                     </View>
-                    <View style={[styles.customCheckbox, deliveryHome && styles.customCheckboxActive]}>
-                      {deliveryHome && <FontAwesome5 name="check" size={12} color="#fff" />}
+                    <View
+                      style={[
+                        styles.customCheckbox,
+                        deliveryHome && styles.customCheckboxActive,
+                      ]}
+                    >
+                      {deliveryHome && (
+                        <FontAwesome5 name="check" size={12} color="#fff" />
+                      )}
                     </View>
                   </TouchableOpacity>
 
-                  <TouchableOpacity 
-                    style={[styles.deliveryOption, deliveryPickup && styles.deliveryOptionActive]}
+                  <TouchableOpacity
+                    style={[
+                      styles.deliveryOption,
+                      deliveryPickup && styles.deliveryOptionActive,
+                    ]}
                     onPress={() => setDeliveryPickup(!deliveryPickup)}
                   >
                     <View style={styles.deliveryOptionContent}>
-                      <FontAwesome5 
-                        name="store" 
-                        size={16} 
-                        color={deliveryPickup ? "#fff" : "#4CAF50"} 
+                      <FontAwesome5
+                        name="store"
+                        size={16}
+                        color={deliveryPickup ? "#fff" : "#4CAF50"}
                       />
-                      <Text style={[
-                        styles.deliveryOptionText, 
-                        deliveryPickup && styles.deliveryOptionTextActive
-                      ]}>
+                      <Text
+                        style={[
+                          styles.deliveryOptionText,
+                          deliveryPickup && styles.deliveryOptionTextActive,
+                        ]}
+                      >
                         Self Pickup
                       </Text>
                     </View>
-                    <View style={[styles.customCheckbox, deliveryPickup && styles.customCheckboxActive]}>
-                      {deliveryPickup && <FontAwesome5 name="check" size={12} color="#fff" />}
+                    <View
+                      style={[
+                        styles.customCheckbox,
+                        deliveryPickup && styles.customCheckboxActive,
+                      ]}
+                    >
+                      {deliveryPickup && (
+                        <FontAwesome5 name="check" size={12} color="#fff" />
+                      )}
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -488,7 +550,8 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               {/* Upload Image */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>
-                  <FontAwesome5 name="camera" size={14} color="#4CAF50" /> Product Image
+                  <FontAwesome5 name="camera" size={14} color="#4CAF50" />{" "}
+                  Product Image
                 </Text>
                 {!image ? (
                   <View style={styles.imageUploadContainer}>
@@ -496,15 +559,25 @@ export default function CropForm({ visible, onClose, onSubmit }) {
                       <View style={styles.uploadIconContainer}>
                         <FontAwesome5 name="image" size={32} color="#4CAF50" />
                       </View>
-                      <Text style={styles.placeholderTitle}>Add Product Photo</Text>
-                      <Text style={styles.placeholderSubtitle}>Help buyers see your product</Text>
+                      <Text style={styles.placeholderTitle}>
+                        Add Product Photo
+                      </Text>
+                      <Text style={styles.placeholderSubtitle}>
+                        Help buyers see your product
+                      </Text>
                     </View>
                     <View style={styles.uploadButtonsRow}>
-                      <TouchableOpacity style={styles.choosePhotoBtn} onPress={pickImage}>
+                      <TouchableOpacity
+                        style={styles.choosePhotoBtn}
+                        onPress={pickImage}
+                      >
                         <FontAwesome5 name="images" size={16} color="#fff" />
                         <Text style={styles.uploadBtnText}>Gallery</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.takePhotoBtn} onPress={takePhoto}>
+                      <TouchableOpacity
+                        style={styles.takePhotoBtn}
+                        onPress={takePhoto}
+                      >
                         <FontAwesome5 name="camera" size={16} color="#fff" />
                         <Text style={styles.uploadBtnText}>Camera</Text>
                       </TouchableOpacity>
@@ -513,8 +586,8 @@ export default function CropForm({ visible, onClose, onSubmit }) {
                 ) : (
                   <View style={styles.imagePreviewContainer}>
                     <View style={styles.imageWrapper}>
-                      <Image 
-                        source={{ uri: image }} 
+                      <Image
+                        source={{ uri: image }}
                         style={styles.previewImage}
                         onError={(error) => {
                           console.log("Image load error:", error);
@@ -522,7 +595,7 @@ export default function CropForm({ visible, onClose, onSubmit }) {
                         }}
                         onLoad={() => console.log("Image loaded successfully")}
                       />
-                      <TouchableOpacity 
+                      <TouchableOpacity
                         style={styles.removeImageOverlay}
                         onPress={() => setImage(null)}
                       >
@@ -530,12 +603,15 @@ export default function CropForm({ visible, onClose, onSubmit }) {
                       </TouchableOpacity>
                     </View>
                     <View style={styles.imageActions}>
-                      <TouchableOpacity style={styles.changeImageBtn} onPress={pickImage}>
+                      <TouchableOpacity
+                        style={styles.changeImageBtn}
+                        onPress={pickImage}
+                      >
                         <FontAwesome5 name="edit" size={14} color="#fff" />
                         <Text style={styles.imageActionText}>Change</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity 
-                        style={styles.removeImageBtn} 
+                      <TouchableOpacity
+                        style={styles.removeImageBtn}
                         onPress={() => setImage(null)}
                       >
                         <FontAwesome5 name="trash" size={14} color="#fff" />
@@ -549,10 +625,14 @@ export default function CropForm({ visible, onClose, onSubmit }) {
               {/* Description */}
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>
-                  <FontAwesome5 name="align-left" size={14} color="#4CAF50" /> Description (Optional)
+                  <FontAwesome5 name="align-left" size={14} color="#4CAF50" />{" "}
+                  Description (Optional)
                 </Text>
                 <TextInput
-                  style={[styles.textArea, description ? styles.inputFilled : null]}
+                  style={[
+                    styles.textArea,
+                    description ? styles.inputFilled : null,
+                  ]}
                   placeholder="Tell buyers about freshness, organic certification, special qualities..."
                   multiline
                   numberOfLines={4}
@@ -566,15 +646,18 @@ export default function CropForm({ visible, onClose, onSubmit }) {
 
             {/* Action Buttons */}
             <View style={styles.actionContainer}>
-              <TouchableOpacity 
-                style={styles.cancelBtn} 
+              <TouchableOpacity
+                style={styles.cancelBtn}
                 onPress={closeModal}
                 disabled={isSubmitting}
               >
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.submitBtn, isSubmitting && styles.submitBtnDisabled]} 
+              <TouchableOpacity
+                style={[
+                  styles.submitBtn,
+                  isSubmitting && styles.submitBtnDisabled,
+                ]}
                 onPress={handleSubmit}
                 disabled={isSubmitting}
               >
@@ -691,7 +774,7 @@ const styles = StyleSheet.create({
     borderColor: "#e8f5e8",
     borderRadius: 12,
     backgroundColor: "#fafffe",
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   picker: {
     height: Platform.OS === "ios" ? 180 : 50,

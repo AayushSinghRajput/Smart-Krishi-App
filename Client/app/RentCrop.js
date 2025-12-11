@@ -87,31 +87,24 @@ const messages = [
 const filterOptions = ["All", "Vegetables", "Fruits", "Grains", "Near Me"];
 
 // API Configuration - Update to match your server address
-const API_BASE_URL = 'http://192.168.1.70:5000/api';
+const API_BASE_URL = 'http://192.168.1.66:5000/api';
 
 // Debug function to check for duplicate IDs
 const debugProductIds = (products) => {
   if (!products || products.length === 0) return;
-  
-  console.log('=== PRODUCT IDS DEBUG ===');
-  console.log('Total products:', products.length);
-  
+
   const ids = products.map(p => p.id);
   const uniqueIds = [...new Set(ids)];
-  
-  console.log('Unique IDs count:', uniqueIds.length);
-  
+
+
   if (ids.length !== uniqueIds.length) {
-    console.error('❌ DUPLICATE IDS FOUND!');
     const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
     console.error('Duplicates:', [...new Set(duplicates)]);
     
     // Find products with duplicate IDs
     const duplicateProducts = products.filter(p => duplicates.includes(p.id));
     console.error('Products with duplicate IDs:', duplicateProducts);
-  } else {
-    console.log('✅ All IDs are unique');
-  }
+  } 
   
   // Check for null/undefined/empty IDs
   const invalidIds = products.filter(p => !p.id || p.id === '');

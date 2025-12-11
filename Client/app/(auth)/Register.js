@@ -1,70 +1,80 @@
-import React, { useState, useContext } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  ActivityIndicator, 
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
   Alert,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Image
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { AuthContext } from '../../context/AuthContext';
-import Toast from 'react-native-toast-message';
+  Image,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { AuthContext } from "../../context/AuthContext";
+import Toast from "react-native-toast-message";
+import { registerUser } from "../../services/authService";
 
 export default function Register() {
   const router = useRouter();
   const { signIn } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: '',
-    role: 'user',
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    role: "user",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const updateFormData = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ''
+        [field]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    else if (formData.name.trim().length < 2) newErrors.name = 'Name must be at least 2 characters';
-    else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) newErrors.name = 'Name can only contain letters and spaces';
 
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) newErrors.email = 'Please enter a valid email address';
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    else if (formData.name.trim().length < 2)
+      newErrors.name = "Name must be at least 2 characters";
+    else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim()))
+      newErrors.name = "Name can only contain letters and spaces";
 
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{6,}$/.test(formData.password)) {
-      newErrors.password = 'Password must contain uppercase, lowercase, and number';
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()))
+      newErrors.email = "Please enter a valid email address";
+
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (formData.password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
+    else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{6,}$/.test(
+        formData.password
+      )
+    ) {
+      newErrors.password =
+        "Password must contain uppercase, lowercase, and number";
     }
 
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     else {
-      const cleanPhone = formData.phone.replace(/[\s\-\(\)]/g, '');
+      const cleanPhone = formData.phone.replace(/[\s\-\(\)]/g, "");
       if (!/^[\+]?[1-9][\d]{0,15}$/.test(cleanPhone) || cleanPhone.length < 7) {
-        newErrors.phone = 'Please enter a valid phone number';
+        newErrors.phone = "Please enter a valid phone number";
       }
     }
 
@@ -76,79 +86,53 @@ export default function Register() {
     if (!validateForm()) return;
 
     setLoading(true);
-
     try {
-      console.log('Attempting to register user...'); // Debug log
-      
-      // Updated API endpoint - remove HTTPS and use HTTP for local development
-      const API_URL = __DEV__ 
-        ? 'http://192.168.18.23:5000/api/auth/register'  // HTTP for development
-        : 'https://192.168.18.23:5000/api/auth/register'; // HTTPS for production
+      const { status, data } = await registerUser(formData);
 
-      console.log('API URL:', API_URL); // Debug log
-
-      const requestBody = {
-        name: formData.name.trim(),
-        email: formData.email.toLowerCase().trim(),
-        password: formData.password,
-        phone: formData.phone.trim(),
-        role: formData.role
-      };
-
-      console.log('Request body:', requestBody); // Debug log
-
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      console.log('Response status:', response.status); // Debug log
-      console.log('Response headers:', response.headers); // Debug log
-
-      const data = await response.json();
-      console.log('Response data:', data); // Debug log
-
-      if (response.ok) {
+      if (status >= 200 && status < 300) {
         Toast.show({
-          type: 'success',
-          text1: 'Registration Successful',
-          text2: 'Your account has been created successfully!',
+          type: "success",
+          text1: "Registration Successful",
+          text2: "Your account has been created successfully!",
           visibilityTime: 3000,
           autoHide: true,
           topOffset: 50,
         });
-        
+
         await signIn(data.token, data.user);
-        router.replace('/(tabs)/home');
+        router.replace("/(tabs)/home");
       } else {
-        // More detailed error handling
         if (data.errors && Array.isArray(data.errors)) {
-          Alert.alert('Registration Failed', data.errors.join('\n'));
+          Alert.alert("Registration Failed", data.errors.join("\n"));
         } else if (data.message) {
-          Alert.alert('Registration Failed', data.message);
+          Alert.alert("Registration Failed", data.message);
         } else {
-          Alert.alert('Registration Failed', 'An unknown error occurred. Please try again.');
+          Alert.alert(
+            "Registration Failed",
+            "An unknown error occurred. Please try again."
+          );
         }
       }
     } catch (error) {
-      console.error('Registration error details:', error); // Enhanced debug log
-      
-      // More specific error handling
-      if (error.message.includes('Network request failed') || error.message.includes('fetch')) {
-        Alert.alert('Connection Error', 
-          'Unable to connect to the server. Please check:\n' +
-          '• Your internet connection\n' +
-          '• Server is running on port 5000\n' +
-          '• Correct IP address (192.168.18.23)'
+      console.error("Registration error details:", error);
+      if (
+        error.message.includes("Network request failed") ||
+        error.message.includes("fetch")
+      ) {
+        Alert.alert(
+          "Connection Error",
+          "Unable to connect to the server. Check your connection and server status."
         );
-      } else if (error.message.includes('JSON')) {
-        Alert.alert('Server Error', 'Server returned invalid response. Please try again.');
+      } else if (error.message.includes("JSON")) {
+        Alert.alert(
+          "Server Error",
+          "Server returned invalid response. Please try again."
+        );
       } else {
-        Alert.alert('Registration Error', error.message || 'An unexpected error occurred.');
+        Alert.alert(
+          "Registration Error",
+          error.message || "An unexpected error occurred."
+        );
       }
     } finally {
       setLoading(false);
@@ -156,17 +140,17 @@ export default function Register() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <Image 
-            source={require('../../assets/images/logo.png')}
+          <Image
+            source={require("../../assets/images/logo.png")}
             style={styles.logo}
           />
           <Text style={styles.title}>Create Account</Text>
@@ -181,7 +165,7 @@ export default function Register() {
               placeholder="John Doe"
               autoCapitalize="words"
               value={formData.name}
-              onChangeText={(value) => updateFormData('name', value)}
+              onChangeText={(value) => updateFormData("name", value)}
               style={[styles.input, errors.name && styles.inputError]}
               autoComplete="name"
               maxLength={50}
@@ -197,38 +181,47 @@ export default function Register() {
               keyboardType="email-address"
               autoCapitalize="none"
               value={formData.email}
-              onChangeText={(value) => updateFormData('email', value)}
+              onChangeText={(value) => updateFormData("email", value)}
               style={[styles.input, errors.email && styles.inputError]}
               autoComplete="email"
               maxLength={100}
             />
-            {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            {errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
           </View>
 
           {/* Password Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
-            <View style={[styles.passwordContainer, errors.password && styles.inputError]}>
+            <View
+              style={[
+                styles.passwordContainer,
+                errors.password && styles.inputError,
+              ]}
+            >
               <TextInput
                 placeholder="••••••••"
                 secureTextEntry={!passwordVisible}
                 value={formData.password}
-                onChangeText={(value) => updateFormData('password', value)}
+                onChangeText={(value) => updateFormData("password", value)}
                 style={styles.passwordInput}
                 autoComplete="password"
                 maxLength={50}
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.visibilityToggle}
                 onPress={() => setPasswordVisible(!passwordVisible)}
                 activeOpacity={0.7}
               >
                 <Text style={styles.visibilityText}>
-                  {passwordVisible ? '👁️' : '👁️‍🗨️'}
+                  {passwordVisible ? "👁️" : "👁️‍🗨️"}
                 </Text>
               </TouchableOpacity>
             </View>
-            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
             <Text style={styles.helperText}>
               Must contain uppercase, lowercase, and number
             </Text>
@@ -241,31 +234,33 @@ export default function Register() {
               placeholder="+1 (123) 456-7890"
               keyboardType="phone-pad"
               value={formData.phone}
-              onChangeText={(value) => updateFormData('phone', value)}
+              onChangeText={(value) => updateFormData("phone", value)}
               style={[styles.input, errors.phone && styles.inputError]}
               autoComplete="tel"
               maxLength={20}
             />
-            {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+            {errors.phone && (
+              <Text style={styles.errorText}>{errors.phone}</Text>
+            )}
           </View>
 
           {/* Role Selector */}
           <View style={styles.roleContainer}>
             <Text style={styles.label}>Account Type</Text>
             <View style={styles.roleButtons}>
-              {['user', 'farmer'].map(r => (
+              {["user", "farmer"].map((r) => (
                 <TouchableOpacity
                   key={r}
                   style={[
                     styles.roleButton,
-                    formData.role === r && styles.roleButtonSelected
+                    formData.role === r && styles.roleButtonSelected,
                   ]}
-                  onPress={() => updateFormData('role', r)}
+                  onPress={() => updateFormData("role", r)}
                 >
                   <Text
                     style={[
                       styles.roleButtonText,
-                      formData.role === r && styles.roleButtonTextSelected
+                      formData.role === r && styles.roleButtonTextSelected,
                     ]}
                   >
                     {r.charAt(0).toUpperCase() + r.slice(1)}
@@ -276,9 +271,9 @@ export default function Register() {
           </View>
 
           {/* Register Button */}
-          <TouchableOpacity 
-            style={[styles.button, loading && styles.buttonDisabled]} 
-            onPress={handleRegister} 
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
+            onPress={handleRegister}
             disabled={loading}
             activeOpacity={0.8}
           >
@@ -292,7 +287,7 @@ export default function Register() {
           {/* Login Link */}
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>Already have an account?</Text>
-            <TouchableOpacity onPress={() => router.push('/(auth)/Login')}>
+            <TouchableOpacity onPress={() => router.push("/(auth)/Login")}>
               <Text style={styles.loginLink}> Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -306,17 +301,17 @@ export default function Register() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   scrollContainer: {
     flexGrow: 1,
     paddingBottom: 40,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 40,
     paddingBottom: 20,
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     marginBottom: 20,
@@ -326,18 +321,18 @@ const styles = StyleSheet.create({
     height: 80,
     marginBottom: 20,
     borderRadius: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 10,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: 'white',
+    fontWeight: "700",
+    color: "white",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#e8f5e9',
+    color: "#e8f5e9",
   },
   formContainer: {
     paddingHorizontal: 24,
@@ -348,43 +343,43 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#2e7d32',
+    fontWeight: "600",
+    color: "#2e7d32",
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: "#f8fafc",
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 12,
     fontSize: 16,
-    color: '#1a202c',
+    color: "#1a202c",
     borderWidth: 1,
-    borderColor: '#e8f5e9',
+    borderColor: "#e8f5e9",
   },
   inputError: {
-    borderColor: '#e74c3c',
+    borderColor: "#e74c3c",
     borderWidth: 1.5,
   },
   errorText: {
-    color: '#e74c3c',
+    color: "#e74c3c",
     fontSize: 14,
     marginTop: 6,
     marginLeft: 4,
   },
   helperText: {
-    color: '#6c757d',
+    color: "#6c757d",
     fontSize: 12,
     marginTop: 4,
     marginLeft: 4,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingVertical: 16,
     borderRadius: 12,
     marginTop: 24,
-    alignItems: 'center',
-    shadowColor: '#388E3C',
+    alignItems: "center",
+    shadowColor: "#388E3C",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -394,65 +389,65 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 16,
   },
   roleContainer: {
     marginBottom: 20,
   },
   roleButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   roleButton: {
     flex: 1,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#e8f5e9',
+    borderColor: "#e8f5e9",
     borderRadius: 10,
-    alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    alignItems: "center",
+    backgroundColor: "#f8fafc",
   },
   roleButtonSelected: {
-    backgroundColor: '#4CAF50',
-    borderColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
+    borderColor: "#4CAF50",
   },
   roleButtonText: {
-    color: '#555',
-    fontWeight: '500',
+    color: "#555",
+    fontWeight: "500",
   },
   roleButtonTextSelected: {
-    color: '#fff',
+    color: "#fff",
   },
   loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 24,
   },
   loginText: {
-    color: '#6c757d',
+    color: "#6c757d",
     fontSize: 16,
   },
   loginLink: {
-    color: '#4CAF50',
-    fontWeight: '600',
+    color: "#4CAF50",
+    fontWeight: "600",
     fontSize: 16,
   },
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
-    borderColor: '#e8f5e9',
+    borderColor: "#e8f5e9",
     borderRadius: 12,
-    backgroundColor: '#f8fafc',
+    backgroundColor: "#f8fafc",
   },
   passwordInput: {
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#1a202c',
+    color: "#1a202c",
   },
   visibilityToggle: {
     padding: 12,

@@ -11,9 +11,14 @@ import {
   Platform,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function RentProduct({ visible, onClose, machine, onRentSuccess }) {
+export default function RentProduct({
+  visible,
+  onClose,
+  machine,
+  onRentSuccess,
+}) {
   const [duration, setDuration] = useState("1");
   const [deliveryOption, setDeliveryOption] = useState("pickup"); // 'pickup' or 'delivery'
   const [startDate, setStartDate] = useState(new Date());
@@ -41,7 +46,10 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
 
   const handleDurationChange = (text) => {
     const numericValue = text.replace(/[^0-9]/g, "");
-    if (numericValue === "" || (parseInt(numericValue) <= maxDuration && parseInt(numericValue) > 0)) {
+    if (
+      numericValue === "" ||
+      (parseInt(numericValue) <= maxDuration && parseInt(numericValue) > 0)
+    ) {
       setDuration(numericValue);
     }
   };
@@ -61,36 +69,36 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
   };
 
   const formatDate = (date) => {
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit', 
-      year: 'numeric'
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
   };
 
   const formatTime = (time) => {
-    return time.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+    return time.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || startDate;
-    setShowDatePicker(Platform.OS === 'ios');
+    setShowDatePicker(Platform.OS === "ios");
     setStartDate(currentDate);
   };
 
   const onTimeChange = (event, selectedTime) => {
     const currentTime = selectedTime || startTime;
-    setShowTimePicker(Platform.OS === 'ios');
+    setShowTimePicker(Platform.OS === "ios");
     setStartTime(currentTime);
   };
 
   const handleRentConfirm = () => {
     const rentDuration = parseInt(duration);
-    
+
     if (!rentDuration || rentDuration <= 0) {
       Alert.alert("Error", "Please enter a valid duration");
       return;
@@ -101,27 +109,41 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
       return;
     }
 
-    const deliveryCharge = deliveryOption === 'delivery' ? 200 : 0;
+    const deliveryCharge = deliveryOption === "delivery" ? 200 : 0;
     const totalAmount = totalPrice + deliveryCharge;
 
     Alert.alert(
       "Confirm Rental",
-      `Rent ${machine.name} for ${rentDuration} ${machine.unit} at ₹${totalAmount.toFixed(2)}?\n\nStart: ${formatDate(startDate)} at ${formatTime(startTime)}\nService: ${deliveryOption === 'pickup' ? 'Self Pickup' : 'Equipment Delivery'}`,
+      `Rent ${machine.name} for ${rentDuration} ${
+        machine.unit
+      } at ₹${totalAmount.toFixed(2)}?\n\nStart: ${formatDate(
+        startDate
+      )} at ${formatTime(startTime)}\nService: ${
+        deliveryOption === "pickup" ? "Self Pickup" : "Equipment Delivery"
+      }`,
       [
         {
           text: "Cancel",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Confirm",
           onPress: () => {
             onRentSuccess(machine.id, rentDuration);
             Alert.alert(
-              "Rental Confirmed!", 
-              `Your rental for ${machine.name} has been confirmed for ${rentDuration} ${machine.unit}.${deliveryOption === 'delivery' ? '\n\nEquipment will be delivered to your location.' : '\n\nPlease collect from the specified location.'}\n\nRental starts: ${formatDate(startDate)} at ${formatTime(startTime)}`
+              "Rental Confirmed!",
+              `Your rental for ${
+                machine.name
+              } has been confirmed for ${rentDuration} ${machine.unit}.${
+                deliveryOption === "delivery"
+                  ? "\n\nEquipment will be delivered to your location."
+                  : "\n\nPlease collect from the specified location."
+              }\n\nRental starts: ${formatDate(startDate)} at ${formatTime(
+                startTime
+              )}`
             );
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -138,10 +160,7 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
           {/* Header with Close Button */}
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Rent Agricultural Equipment</Text>
-            <TouchableOpacity 
-              style={styles.closeButton} 
-              onPress={onClose}
-            >
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <FontAwesome5 name="times" size={20} color="#64748b" />
             </TouchableOpacity>
           </View>
@@ -150,10 +169,10 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
             {/* Equipment Info */}
             <View style={styles.productSection}>
               <View style={styles.productIconContainer}>
-                <FontAwesome5 
-                  name={machine.icon || "tools"} 
-                  size={28} 
-                  color="#3b82f6" 
+                <FontAwesome5
+                  name={machine.icon || "tools"}
+                  size={28}
+                  color="#3b82f6"
                 />
               </View>
               <View style={styles.productInfo}>
@@ -161,7 +180,8 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
                 <Text style={styles.productDesc}>{machine.desc}</Text>
                 <Text style={styles.productPrice}>{machine.price}</Text>
                 <Text style={styles.availableStock}>
-                  {maxDuration}{machine.unit} available • {machine.maxHours}
+                  {maxDuration}
+                  {machine.unit} available • {machine.maxHours}
                 </Text>
               </View>
             </View>
@@ -171,12 +191,16 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Specifications</Text>
                 <View style={styles.specsContainer}>
-                  {Object.entries(machine.specifications).map(([key, value]) => (
-                    <View key={key} style={styles.specRow}>
-                      <Text style={styles.specLabel}>{key.charAt(0).toUpperCase() + key.slice(1)}:</Text>
-                      <Text style={styles.specValue}>{value}</Text>
-                    </View>
-                  ))}
+                  {Object.entries(machine.specifications).map(
+                    ([key, value]) => (
+                      <View key={key} style={styles.specRow}>
+                        <Text style={styles.specLabel}>
+                          {key.charAt(0).toUpperCase() + key.slice(1)}:
+                        </Text>
+                        <Text style={styles.specValue}>{value}</Text>
+                      </View>
+                    )
+                  )}
                 </View>
               </View>
             )}
@@ -185,14 +209,21 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Rental Duration</Text>
               <View style={styles.durationContainer}>
-                <TouchableOpacity 
-                  style={[styles.durationButton, parseInt(duration) <= 1 && styles.durationButtonDisabled]}
+                <TouchableOpacity
+                  style={[
+                    styles.durationButton,
+                    parseInt(duration) <= 1 && styles.durationButtonDisabled,
+                  ]}
                   onPress={decrementDuration}
                   disabled={parseInt(duration) <= 1}
                 >
-                  <FontAwesome5 name="minus" size={16} color={parseInt(duration) <= 1 ? "#cbd5e1" : "#64748b"} />
+                  <FontAwesome5
+                    name="minus"
+                    size={16}
+                    color={parseInt(duration) <= 1 ? "#cbd5e1" : "#64748b"}
+                  />
                 </TouchableOpacity>
-                
+
                 <TextInput
                   style={styles.durationInput}
                   value={duration}
@@ -202,17 +233,29 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
                   maxLength={2}
                 />
                 <Text style={styles.unitText}>{machine.unit}</Text>
-                
-                <TouchableOpacity 
-                  style={[styles.durationButton, parseInt(duration) >= maxDuration && styles.durationButtonDisabled]}
+
+                <TouchableOpacity
+                  style={[
+                    styles.durationButton,
+                    parseInt(duration) >= maxDuration &&
+                      styles.durationButtonDisabled,
+                  ]}
                   onPress={incrementDuration}
                   disabled={parseInt(duration) >= maxDuration}
                 >
-                  <FontAwesome5 name="plus" size={16} color={parseInt(duration) >= maxDuration ? "#cbd5e1" : "#64748b"} />
+                  <FontAwesome5
+                    name="plus"
+                    size={16}
+                    color={
+                      parseInt(duration) >= maxDuration ? "#cbd5e1" : "#64748b"
+                    }
+                  />
                 </TouchableOpacity>
               </View>
               {parseInt(duration) >= maxDuration && (
-                <Text style={styles.maxDurationText}>Maximum available duration selected</Text>
+                <Text style={styles.maxDurationText}>
+                  Maximum available duration selected
+                </Text>
               )}
             </View>
 
@@ -226,8 +269,15 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
                     style={styles.datePickerButton}
                     onPress={() => setShowDatePicker(true)}
                   >
-                    <FontAwesome5 name="calendar-alt" size={16} color="#22c55e" style={{ marginRight: 8 }} />
-                    <Text style={styles.datePickerText}>{formatDate(startDate)}</Text>
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={16}
+                      color="#22c55e"
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.datePickerText}>
+                      {formatDate(startDate)}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.scheduleRow}>
@@ -236,8 +286,15 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
                     style={styles.datePickerButton}
                     onPress={() => setShowTimePicker(true)}
                   >
-                    <FontAwesome5 name="clock" size={16} color="#22c55e" style={{ marginRight: 8 }} />
-                    <Text style={styles.datePickerText}>{formatTime(startTime)}</Text>
+                    <FontAwesome5
+                      name="clock"
+                      size={16}
+                      color="#22c55e"
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text style={styles.datePickerText}>
+                      {formatTime(startTime)}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -269,25 +326,28 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
             {/* Service Options */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Service Option</Text>
-              
+
               <TouchableOpacity
                 style={[
                   styles.deliveryOption,
-                  deliveryOption === "pickup" && styles.deliveryOptionSelected
+                  deliveryOption === "pickup" && styles.deliveryOptionSelected,
                 ]}
                 onPress={() => setDeliveryOption("pickup")}
               >
                 <View style={styles.deliveryOptionContent}>
-                  <FontAwesome5 
-                    name="warehouse" 
-                    size={20} 
-                    color={deliveryOption === "pickup" ? "#22c55e" : "#64748b"} 
+                  <FontAwesome5
+                    name="warehouse"
+                    size={20}
+                    color={deliveryOption === "pickup" ? "#22c55e" : "#64748b"}
                   />
                   <View style={styles.deliveryOptionText}>
-                    <Text style={[
-                      styles.deliveryOptionTitle,
-                      deliveryOption === "pickup" && styles.deliveryOptionTitleSelected
-                    ]}>
+                    <Text
+                      style={[
+                        styles.deliveryOptionTitle,
+                        deliveryOption === "pickup" &&
+                          styles.deliveryOptionTitleSelected,
+                      ]}
+                    >
                       Self Pickup
                     </Text>
                     <Text style={styles.deliveryOptionDesc}>
@@ -295,10 +355,12 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
                     </Text>
                   </View>
                 </View>
-                <View style={[
-                  styles.radioButton,
-                  deliveryOption === "pickup" && styles.radioButtonSelected
-                ]}>
+                <View
+                  style={[
+                    styles.radioButton,
+                    deliveryOption === "pickup" && styles.radioButtonSelected,
+                  ]}
+                >
                   {deliveryOption === "pickup" && (
                     <View style={styles.radioButtonInner} />
                   )}
@@ -308,21 +370,27 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
               <TouchableOpacity
                 style={[
                   styles.deliveryOption,
-                  deliveryOption === "delivery" && styles.deliveryOptionSelected
+                  deliveryOption === "delivery" &&
+                    styles.deliveryOptionSelected,
                 ]}
                 onPress={() => setDeliveryOption("delivery")}
               >
                 <View style={styles.deliveryOptionContent}>
-                  <FontAwesome5 
-                    name="truck" 
-                    size={20} 
-                    color={deliveryOption === "delivery" ? "#22c55e" : "#64748b"} 
+                  <FontAwesome5
+                    name="truck"
+                    size={20}
+                    color={
+                      deliveryOption === "delivery" ? "#22c55e" : "#64748b"
+                    }
                   />
                   <View style={styles.deliveryOptionText}>
-                    <Text style={[
-                      styles.deliveryOptionTitle,
-                      deliveryOption === "delivery" && styles.deliveryOptionTitleSelected
-                    ]}>
+                    <Text
+                      style={[
+                        styles.deliveryOptionTitle,
+                        deliveryOption === "delivery" &&
+                          styles.deliveryOptionTitleSelected,
+                      ]}
+                    >
                       Equipment Delivery
                     </Text>
                     <Text style={styles.deliveryOptionDesc}>
@@ -330,10 +398,12 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
                     </Text>
                   </View>
                 </View>
-                <View style={[
-                  styles.radioButton,
-                  deliveryOption === "delivery" && styles.radioButtonSelected
-                ]}>
+                <View
+                  style={[
+                    styles.radioButton,
+                    deliveryOption === "delivery" && styles.radioButtonSelected,
+                  ]}
+                >
                   {deliveryOption === "delivery" && (
                     <View style={styles.radioButtonInner} />
                   )}
@@ -343,7 +413,9 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
 
             {/* Special Notes */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Special Requirements (Optional)</Text>
+              <Text style={styles.sectionTitle}>
+                Special Requirements (Optional)
+              </Text>
               <TextInput
                 style={styles.notesInput}
                 placeholder="Any specific requirements, operator needed, fuel arrangements..."
@@ -360,8 +432,13 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
             <View style={styles.summarySection}>
               <Text style={styles.summaryTitle}>Rental Summary</Text>
               <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>{machine.name} ({duration}{machine.unit})</Text>
-                <Text style={styles.summaryValue}>₹{(basePrice * parseFloat(duration || 0)).toFixed(2)}</Text>
+                <Text style={styles.summaryLabel}>
+                  {machine.name} ({duration}
+                  {machine.unit})
+                </Text>
+                <Text style={styles.summaryValue}>
+                  ₹{(basePrice * parseFloat(duration || 0)).toFixed(2)}
+                </Text>
               </View>
               {deliveryOption === "delivery" && (
                 <View style={styles.summaryRow}>
@@ -373,7 +450,10 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryTotalLabel}>Total Amount</Text>
                 <Text style={styles.summaryTotalValue}>
-                  ₹{(totalPrice + (deliveryOption === "delivery" ? 200 : 0)).toFixed(2)}
+                  ₹
+                  {(
+                    totalPrice + (deliveryOption === "delivery" ? 200 : 0)
+                  ).toFixed(2)}
                 </Text>
               </View>
               <Text style={styles.summaryNote}>
@@ -384,25 +464,26 @@ export default function RentProduct({ visible, onClose, machine, onRentSuccess }
 
           {/* Footer with Action Buttons */}
           <View style={styles.modalFooter}>
-            <TouchableOpacity 
-              style={styles.cancelButton} 
-              onPress={onClose}
-            >
+            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[
                 styles.confirmButton,
-                (!duration || parseInt(duration) <= 0) && styles.confirmButtonDisabled
+                (!duration || parseInt(duration) <= 0) &&
+                  styles.confirmButtonDisabled,
               ]}
               onPress={handleRentConfirm}
               disabled={!duration || parseInt(duration) <= 0}
             >
-              <FontAwesome5 name="calendar-check" size={16} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={styles.confirmButtonText}>
-                Confirm Rental
-              </Text>
+              <FontAwesome5
+                name="calendar-check"
+                size={16}
+                color="#fff"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={styles.confirmButtonText}>Confirm Rental</Text>
             </TouchableOpacity>
           </View>
         </View>
