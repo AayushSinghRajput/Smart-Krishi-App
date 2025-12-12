@@ -21,6 +21,7 @@ export default function Profile() {
   const getNavigationRoute = (label) => {
     const routeMap = {
       'My Crops': '/my-crops',
+      'Crop Health':'/crop-health',
       'My Orders': '/RentMachine',
       'Notifications': '/(tabs)/alerts',
       'Billing & Payments': '/billing',

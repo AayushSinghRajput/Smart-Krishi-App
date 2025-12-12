@@ -18,10 +18,10 @@ import { Picker } from "@react-native-picker/picker";
 import Checkbox from "expo-checkbox";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome5 } from "@expo/vector-icons";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const categoryOptions = ["Tractor", "Tiller", "Harvester"];
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
 // Toast Component
 const Toast = ({ visible, message, onHide }) => {
@@ -99,7 +99,7 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
   }, [visible]);
 
   const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   const handleFromDateChange = (event, selectedDate) => {
@@ -182,10 +182,7 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
       return;
     }
     if (!pickup && !delivery) {
-      Alert.alert(
-        "Validation",
-        "Select at least one pickup/delivery option"
-      );
+      Alert.alert("Validation", "Select at least one pickup/delivery option");
       return;
     }
 
@@ -208,7 +205,7 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
     try {
       await onSubmit(formData);
       setShowToast(true);
-      
+
       // Close modal after a short delay to show the toast
       setTimeout(() => {
         onClose();
@@ -231,15 +228,15 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
         message="Machine listed successfully!"
         onHide={() => setShowToast(false)}
       />
-      
+
       <Modal visible={visible} animationType="slide" transparent>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
           style={styles.modalContainer}
         >
           <View style={styles.modalContent}>
-            <ScrollView 
-              keyboardShouldPersistTaps="handled" 
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.scrollContent}
             >
@@ -249,7 +246,9 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                   <FontAwesome5 name="tractor" size={24} color="#4CAF50" />
                 </View>
                 <Text style={styles.heading}>List Your Machine</Text>
-                <Text style={styles.subheading}>Share your agricultural equipment with others</Text>
+                <Text style={styles.subheading}>
+                  Share your agricultural equipment with others
+                </Text>
               </View>
 
               {/* Tool Name */}
@@ -313,13 +312,17 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                     style={styles.dateInputButton}
                     onPress={() => setShowFromDatePicker(true)}
                   >
-                    <FontAwesome5 name="calendar-alt" size={16} color="#4CAF50" />
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={16}
+                      color="#4CAF50"
+                    />
                     <Text style={styles.dateInputText}>
                       {formatDate(availabilityFrom)}
                     </Text>
                   </TouchableOpacity>
                 </View>
-                
+
                 <View style={[styles.inputContainer, styles.dateInput]}>
                   <Text style={styles.label}>
                     Available To <Text style={styles.required}>*</Text>
@@ -328,7 +331,11 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                     style={styles.dateInputButton}
                     onPress={() => setShowToDatePicker(true)}
                   >
-                    <FontAwesome5 name="calendar-alt" size={16} color="#4CAF50" />
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={16}
+                      color="#4CAF50"
+                    />
                     <Text style={styles.dateInputText}>
                       {formatDate(availabilityTo)}
                     </Text>
@@ -341,17 +348,17 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                 <DateTimePicker
                   value={availabilityFrom}
                   mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
                   onChange={handleFromDateChange}
                   minimumDate={new Date()}
                 />
               )}
-              
+
               {showToDatePicker && (
                 <DateTimePicker
                   value={availabilityTo}
                   mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
                   onChange={handleToDateChange}
                   minimumDate={availabilityFrom}
                 />
@@ -376,27 +383,59 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                   Pickup/Delivery Options <Text style={styles.required}>*</Text>
                 </Text>
                 <View style={styles.checkboxContainer}>
-                  <TouchableOpacity 
-                    style={[styles.checkboxCard, pickup && styles.checkboxCardActive]} 
+                  <TouchableOpacity
+                    style={[
+                      styles.checkboxCard,
+                      pickup && styles.checkboxCardActive,
+                    ]}
                     onPress={() => setPickup(!pickup)}
                   >
-                    <Checkbox value={pickup} onValueChange={setPickup} style={styles.checkbox} />
+                    <Checkbox
+                      value={pickup}
+                      onValueChange={setPickup}
+                      style={styles.checkbox}
+                    />
                     <View style={styles.checkboxContent}>
-                      <FontAwesome5 name="hand-paper" size={16} color={pickup ? "#4CAF50" : "#888"} />
-                      <Text style={[styles.checkboxLabel, pickup && styles.checkboxLabelActive]}>
+                      <FontAwesome5
+                        name="hand-paper"
+                        size={16}
+                        color={pickup ? "#4CAF50" : "#888"}
+                      />
+                      <Text
+                        style={[
+                          styles.checkboxLabel,
+                          pickup && styles.checkboxLabelActive,
+                        ]}
+                      >
                         Pickup Available
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={[styles.checkboxCard, delivery && styles.checkboxCardActive]} 
+
+                  <TouchableOpacity
+                    style={[
+                      styles.checkboxCard,
+                      delivery && styles.checkboxCardActive,
+                    ]}
                     onPress={() => setDelivery(!delivery)}
                   >
-                    <Checkbox value={delivery} onValueChange={setDelivery} style={styles.checkbox} />
+                    <Checkbox
+                      value={delivery}
+                      onValueChange={setDelivery}
+                      style={styles.checkbox}
+                    />
                     <View style={styles.checkboxContent}>
-                      <FontAwesome5 name="truck" size={16} color={delivery ? "#4CAF50" : "#888"} />
-                      <Text style={[styles.checkboxLabel, delivery && styles.checkboxLabelActive]}>
+                      <FontAwesome5
+                        name="truck"
+                        size={16}
+                        color={delivery ? "#4CAF50" : "#888"}
+                      />
+                      <Text
+                        style={[
+                          styles.checkboxLabel,
+                          delivery && styles.checkboxLabelActive,
+                        ]}
+                      >
                         Delivery Available
                       </Text>
                     </View>
@@ -409,8 +448,14 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                 <Text style={styles.label}>Upload Images</Text>
                 {image ? (
                   <View style={styles.imageContainer}>
-                    <Image source={{ uri: image }} style={styles.selectedImage} />
-                    <TouchableOpacity style={styles.removeImageBtn} onPress={removeImage}>
+                    <Image
+                      source={{ uri: image }}
+                      style={styles.selectedImage}
+                    />
+                    <TouchableOpacity
+                      style={styles.removeImageBtn}
+                      onPress={removeImage}
+                    >
                       <FontAwesome5 name="times" size={16} color="#fff" />
                     </TouchableOpacity>
                   </View>
@@ -418,19 +463,37 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                   <View style={styles.placeholderContainer}>
                     <View style={styles.placeholderIcon}>
                       <FontAwesome5 name="tools" size={32} color="#888" />
-                      <Text style={styles.placeholderText}>No image selected</Text>
+                      <Text style={styles.placeholderText}>
+                        No image selected
+                      </Text>
                     </View>
                   </View>
                 )}
 
                 <View style={styles.photoButtonsContainer}>
-                  <TouchableOpacity style={styles.photoButton} onPress={pickImage}>
-                    <FontAwesome5 name="image" size={18} color="#4CAF50" style={styles.buttonIcon} />
+                  <TouchableOpacity
+                    style={styles.photoButton}
+                    onPress={pickImage}
+                  >
+                    <FontAwesome5
+                      name="image"
+                      size={18}
+                      color="#4CAF50"
+                      style={styles.buttonIcon}
+                    />
                     <Text style={styles.photoButtonText}>Choose Photo</Text>
                   </TouchableOpacity>
-                  
-                  <TouchableOpacity style={styles.photoButton} onPress={takePhoto}>
-                    <FontAwesome5 name="camera" size={18} color="#4CAF50" style={styles.buttonIcon} />
+
+                  <TouchableOpacity
+                    style={styles.photoButton}
+                    onPress={takePhoto}
+                  >
+                    <FontAwesome5
+                      name="camera"
+                      size={18}
+                      color="#4CAF50"
+                      style={styles.buttonIcon}
+                    />
                     <Text style={styles.photoButtonText}>Take Photo</Text>
                   </TouchableOpacity>
                 </View>
@@ -459,7 +522,11 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                   <Text style={styles.cancelText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.btn, styles.submitBtn, isSubmitting && styles.submitBtnDisabled]}
+                  style={[
+                    styles.btn,
+                    styles.submitBtn,
+                    isSubmitting && styles.submitBtnDisabled,
+                  ]}
                   onPress={handleSubmit}
                   disabled={isSubmitting}
                 >
@@ -469,7 +536,12 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
                     </View>
                   ) : (
                     <>
-                      <FontAwesome5 name="check" size={16} color="#fff" style={styles.buttonIcon} />
+                      <FontAwesome5
+                        name="check"
+                        size={16}
+                        color="#fff"
+                        style={styles.buttonIcon}
+                      />
                       <Text style={styles.submitText}>List Machine</Text>
                     </>
                   )}
@@ -486,32 +558,32 @@ export default function MachineForm({ visible, onClose, onSubmit }) {
 const styles = StyleSheet.create({
   // Toast Styles
   toastContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 60,
     right: 20,
     zIndex: 9999,
   },
   toast: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     elevation: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
+    borderLeftColor: "#4CAF50",
     minWidth: 200,
   },
   toastText: {
     marginLeft: 8,
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     flex: 1,
   },
 
@@ -538,16 +610,16 @@ const styles = StyleSheet.create({
 
   // Header Styles
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 32,
   },
   headerIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#E8F5E8',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#E8F5E8",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
   heading: {
@@ -559,7 +631,7 @@ const styles = StyleSheet.create({
   subheading: {
     fontSize: 14,
     color: "#666",
-    textAlign: 'center',
+    textAlign: "center",
   },
 
   // Input Styles
@@ -573,7 +645,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   required: {
-    color: '#f44336',
+    color: "#f44336",
   },
   input: {
     borderWidth: 1,
@@ -592,8 +664,8 @@ const styles = StyleSheet.create({
 
   // Price Input Styles
   priceInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 12,
@@ -602,8 +674,8 @@ const styles = StyleSheet.create({
   },
   currencySymbol: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#4CAF50',
+    fontWeight: "600",
+    color: "#4CAF50",
     marginRight: 8,
   },
   priceInput: {
@@ -616,15 +688,15 @@ const styles = StyleSheet.create({
 
   // Date Input Styles
   dateRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   dateInput: {
     flex: 1,
   },
   dateInputButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 12,
@@ -661,25 +733,25 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   checkboxCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 12,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
   },
   checkboxCardActive: {
-    borderColor: '#4CAF50',
-    backgroundColor: '#E8F5E8',
+    borderColor: "#4CAF50",
+    backgroundColor: "#E8F5E8",
   },
   checkbox: {
     marginRight: 12,
     borderRadius: 4,
   },
   checkboxContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   checkboxLabel: {
@@ -689,7 +761,7 @@ const styles = StyleSheet.create({
   },
   checkboxLabelActive: {
     color: "#2E7D32",
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   // Image Styles
@@ -790,7 +862,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   cancelBtn: {
     backgroundColor: "#f5f5f5",
@@ -814,7 +886,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

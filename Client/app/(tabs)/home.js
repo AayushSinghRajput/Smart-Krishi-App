@@ -10,9 +10,8 @@ import FAQSection from '../../components/Question';
 import {
   farmingTips,
   featureGridItems,
-  // greetingUser,
   weatherInfo,
-  faqData, // New import
+  faqData, 
 } from '../../constants/data';
 import {AuthContext} from '../../context/AuthContext';
 import { useContext } from 'react';

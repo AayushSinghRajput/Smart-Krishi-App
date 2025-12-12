@@ -3,8 +3,8 @@ import axios from "axios";
 // Login API
 export const loginUser = async (email, password) => {
   const API_URL = __DEV__
-    ? "http://192.168.1.66:5000/api/auth/login"
-    : "https://192.168.1.66:5000/api/auth/login";
+    ? "http://192.168.1.68:5000/api/auth/login"
+    : "https://192.168.1.68:5000/api/auth/login";
 
   try {
     const response = await axios.post(
@@ -33,8 +33,8 @@ export const loginUser = async (email, password) => {
 // Register API
 export const registerUser = async (formData) => {
   const API_URL = __DEV__
-    ? "http://192.168.1.66:5000/api/auth/register"
-    : "https://192.168.1.66:5000/api/auth/register";
+    ? "http://192.168.1.68:5000/api/auth/register"
+    : "https://192.168.1.68:5000/api/auth/register";
 
   const requestBody = {
     name: formData.name.trim(),

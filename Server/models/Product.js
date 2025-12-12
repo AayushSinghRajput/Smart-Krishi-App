@@ -36,10 +36,16 @@ const productSchema = new mongoose.Schema({
     trim: true,
     maxLength: [200, 'Location cannot exceed 200 characters']
   },
+  
+  // --- Cloudinary integration ---
   productImage: {
-    type: String,
-    default: null // Will store the file path
+    type: String, // Stores Cloudinary URL
+    default: null
   },
+  cloudinaryId: {
+    type: String, // Stores public_id for deletion/update
+  },
+
   description: {
     type: String,
     required: [true, 'Description is required'],

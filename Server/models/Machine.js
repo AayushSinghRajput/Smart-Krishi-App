@@ -42,6 +42,15 @@ const machineSchema = new mongoose.Schema({
     required: [true, 'Rental terms are required'],
     trim: true
   },
+
+  // --- Cloudinary integration ---
+  machineImage: {
+    type: String, // URL of the image
+  },
+  cloudinaryId: {
+    type: String, // public_id for deletion
+  },
+
   createdAt: {
     type: Date,
     default: Date.now

@@ -8,21 +8,18 @@ const {
   deleteMachine
 } = require('../controllers/machineController');
 
+const { upload } = require('../config/cloudinary'); 
 
 // Public routes
-router.route('/')
-  .get(getMachines);
-
-router.route('/:id')
-  .get(getMachine);
-
+router.route('/').get(getMachines);
+router.route('/:id').get(getMachine);
 
 
 router.route('/')
-  .post(createMachine);
+  .post(upload.single('machineImage'), createMachine); // Upload single image
 
 router.route('/:id')
-  .put(updateMachine)
+  .put(upload.single('machineImage'), updateMachine) // Upload image on update
   .delete(deleteMachine);
 
 module.exports = router;

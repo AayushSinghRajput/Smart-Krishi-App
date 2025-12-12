@@ -87,7 +87,7 @@ const messages = [
 const filterOptions = ["All", "Vegetables", "Fruits", "Grains", "Near Me"];
 
 // API Configuration - Update to match your server address
-const API_BASE_URL = 'http://192.168.1.66:5000/api';
+const API_BASE_URL = 'http://192.168.1.68:5000/api';
 
 // Debug function to check for duplicate IDs
 const debugProductIds = (products) => {

@@ -1,13 +1,13 @@
-import 'dotenv/config'; // Load environment variables from .env file
+import 'dotenv/config'; 
 
 export default {
   expo: {
-    name: 'smart-krishak',
-    slug: 'smart-krishak',
+    name: 'smart-krishi',
+    slug: 'smart-krishi',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
-    scheme: 'smartkrishak',
+    scheme: 'smartkrishi',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
     ios: {
