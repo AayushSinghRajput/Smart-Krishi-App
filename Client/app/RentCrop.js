@@ -22,6 +22,9 @@ import EditProductForm from "../components/EditProductForm";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../context/AuthContext";
 import FavoriteFarmers from "../components/FavoriteFarmers";
+import Constants from 'expo-constants';
+
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
 
 // Crop images mapping
 const cropImages = {
@@ -86,8 +89,7 @@ const messages = [
 
 const filterOptions = ["All", "Vegetables", "Fruits", "Grains", "Near Me"];
 
-// API Configuration - Update to match your server address
-const API_BASE_URL = 'http://192.168.1.68:5000/api';
+
 
 // Debug function to check for duplicate IDs
 const debugProductIds = (products) => {

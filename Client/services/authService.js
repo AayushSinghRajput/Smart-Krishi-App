@@ -1,10 +1,13 @@
 import axios from "axios";
+import Constants from 'expo-constants';
+
+const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
 
 // Login API
 export const loginUser = async (email, password) => {
   const API_URL = __DEV__
-    ? "http://192.168.1.68:5000/api/auth/login"
-    : "https://192.168.1.68:5000/api/auth/login";
+    ? `${API_BASE_URL}/auth/login`
+    : `${API_BASE_URL}/auth/login`;
 
   try {
     const response = await axios.post(
@@ -33,8 +36,8 @@ export const loginUser = async (email, password) => {
 // Register API
 export const registerUser = async (formData) => {
   const API_URL = __DEV__
-    ? "http://192.168.1.68:5000/api/auth/register"
-    : "https://192.168.1.68:5000/api/auth/register";
+    ? `${API_BASE_URL}/auth/register`
+    : `${API_BASE_URL}/auth/register`;
 
   const requestBody = {
     name: formData.name.trim(),

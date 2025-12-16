@@ -199,36 +199,56 @@ export const alertsList = [
   {
     id: "1",
     title: "Pest Alert: Aphids in Tomatoes",
+    titleNP: "कीरा चेतावनी: टमाटरमा एपिड्स",
+    description:
+      "Aphid infestation detected in tomato crops. Farmers are advised to take immediate pest control measures.",
+    descriptionNP:
+      "टमाटरको बालीमा एपिड्स पत्ता लाग्यो। कृषकहरूले तुरुन्तै कीरा नियन्त्रण उपायहरू लिन सिफारिस गरिन्छ।",
     time: "2h ago",
-    color: "#ff6b6b", // stronger color for alert
     icon: "bug-outline",
   },
   {
     id: "2",
     title: "Heavy Rain Warning",
+    titleNP: "भारी वर्षा चेतावनी",
+    description:
+      "Meteorological department predicts heavy rainfall in the next 24 hours. Take precautions to protect crops and property.",
+    descriptionNP:
+      "मौसम विभागले आगामी २४ घण्टामा भारी वर्षाको पूर्वानुमान गरेको छ। बाली र सम्पत्ति सुरक्षित गर्न सावधानी अपनाउनुहोस्।",
     time: "6h ago",
-    color: "#f1c40f",
     icon: "rainy-outline",
   },
   {
     id: "3",
     title: "Fertilizer Shortage Update",
+    titleNP: "प्रवाहकीय मल अभाव अपडेट",
+    description:
+      "Certain fertilizers are running low in local markets. Plan your crop fertilization accordingly.",
+    descriptionNP:
+      "केही मलहरू स्थानीय बजारमा कम छन्। आफ्नो बाली मलाइकरण योजना अनुसार गर्नुहोस्।",
     time: "1d ago",
-    color: "#1abc9c",
     icon: "leaf-outline",
   },
   {
     id: "4",
     title: "Soil Moisture Level Low",
+    titleNP: "माटोको नमी स्तर कम",
+    description:
+      "Soil moisture levels are below optimal. Irrigation is recommended to prevent crop stress.",
+    descriptionNP:
+      "माटोको नमी स्तर सामान्य भन्दा कम छ। बालीमा तनाव रोक्न सिँचाइ सिफारिस गरिन्छ।",
     time: "3h ago",
-    color: "#3498db",
     icon: "water-outline",
   },
   {
     id: "5",
     title: "Harvest Season Starting Soon",
+    titleNP: "फलफूल/बाली काट्ने मौसम छिट्टै सुरु हुँदैछ",
+    description:
+      "The harvest season is approaching. Prepare storage and transport for your crops.",
+    descriptionNP:
+      "फलफूल/बाली काट्ने मौसम नजिकै छ। आफ्नो बालीको भण्डारण र ढुवानी तयारी गर्नुहोस्।",
     time: "5d ago",
-    color: "#e67e22",
     icon: "calendar-outline",
   },
 ];
@@ -242,11 +262,12 @@ export const profileOptions = [
   { id: "1", label: "My Crops", icon: "leaf" },
   { id: "2", label: "Crop Health", icon: "leaf-outline" },
   { id: "3", label: "My Orders", icon: "cart" },
-  { id: "4", label: "Notifications", icon: "notifications" },
-  { id: "5", label: "Billing & Payments", icon: "card" },
-  { id: "6", label: "Settings", icon: "settings" },
-  { id: "7", label: "Help & Support", icon: "help-circle" },
-  { id: "8", label: "Logout", icon: "log-out" },
+  { id: "4", label: "News", icon: "newspaper-outline" },
+  { id: "5", label: "Notifications", icon: "notifications" },
+  { id: "6", label: "Billing & Payments", icon: "card" },
+  { id: "7", label: "Settings", icon: "settings" },
+  { id: "8", label: "Help & Support", icon: "help-circle" },
+  { id: "9", label: "Logout", icon: "log-out" },
 ];
 
 // constants/data.js

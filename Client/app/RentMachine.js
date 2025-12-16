@@ -13,26 +13,26 @@ import {
   SafeAreaView,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import MachineForm from "../components/MachineForm"; 
+import MachineForm from "../components/MachineForm";
 import RentProduct from "../components/RentProduct";
 import { useNavigation } from "expo-router";
 import { AuthContext } from "../context/AuthContext";
 
 // Import machine images from assets
 const machineImages = {
-  tractor: require('../assets/machine/mini-tractor.jpeg'), // Update with actual filename
-  tiller: require('../assets/machine/rotavator.jpeg'),   // Update with actual filename
-  harvester: require('../assets/machine/combine-harvester.jpeg'), // Update with actual filename
+  tractor: require("../assets/machine/mini-tractor.jpeg"), // Update with actual filename
+  tiller: require("../assets/machine/rotavator.jpeg"), // Update with actual filename
+  harvester: require("../assets/machine/combine-harvester.jpeg"), // Update with actual filename
 };
 
 // Helper function to get machine image based on category
 const getMachineImage = (category) => {
   switch (category.toLowerCase()) {
-    case 'tractor':
+    case "tractor":
       return machineImages.tractor;
-    case 'tiller':
+    case "tiller":
       return machineImages.tiller;
-    case 'harvester':
+    case "harvester":
       return machineImages.harvester;
     default:
       return machineImages.tractor; // Default fallback
@@ -66,8 +66,8 @@ const initialRecentMachines = [
       power: "18HP",
       fuelType: "Diesel",
       weight: "850kg",
-      transmission: "Manual"
-    }
+      transmission: "Manual",
+    },
   },
   {
     id: "m2",
@@ -86,8 +86,8 @@ const initialRecentMachines = [
       width: "1.2m",
       power: "8HP",
       fuelType: "Petrol",
-      weight: "45kg"
-    }
+      weight: "45kg",
+    },
   },
   {
     id: "m3",
@@ -106,8 +106,8 @@ const initialRecentMachines = [
       power: "75HP",
       fuelType: "Diesel",
       capacity: "2 tons/hr",
-      weight: "3500kg"
-    }
+      weight: "3500kg",
+    },
   },
 ];
 
@@ -136,7 +136,7 @@ function Chip({ label, active, onPress }) {
 }
 
 export default function RentMachine({ navigation }) {
-  const {user}  = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
   const [machines, setMachines] = useState(initialRecentMachines);
   const [searchText, setSearchText] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All");
@@ -192,14 +192,15 @@ export default function RentMachine({ navigation }) {
         distance: "0 km",
         heart: false,
         // Use image from assets based on category, or custom image if provided
-        image: formData.imageUri && formData.imageUri.length > 0 
-          ? { uri: formData.imageUri } 
-          : getMachineImage(formData.category),
+        image:
+          formData.imageUri && formData.imageUri.length > 0
+            ? { uri: formData.imageUri }
+            : getMachineImage(formData.category),
         specifications: {
           power: formData.power || "N/A",
           fuelType: formData.fuelType || "N/A",
-          weight: formData.weight || "N/A"
-        }
+          weight: formData.weight || "N/A",
+        },
       },
       ...prev,
     ]);
@@ -234,7 +235,7 @@ export default function RentMachine({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+
       {/* Top Bar */}
       <View style={styles.topBar}>
         <TouchableOpacity
@@ -254,8 +255,8 @@ export default function RentMachine({ navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
-        <ScrollView 
-          keyboardShouldPersistTaps="handled" 
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{ paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
         >
@@ -305,8 +306,10 @@ export default function RentMachine({ navigation }) {
           </ScrollView>
 
           {/* My Active Listings */}
-          {user?.role === 'farmer' && <Text style={styles.sectionTitle}>My Active Listings</Text>}
-          {user?.role === 'farmer' && (
+          {user?.role === "farmer" && (
+            <Text style={styles.sectionTitle}>My Active Listings</Text>
+          )}
+          {user?.role === "farmer" && (
             <View style={styles.listingCard}>
               <View style={styles.listingImageContainer}>
                 <Image
@@ -325,7 +328,8 @@ export default function RentMachine({ navigation }) {
                     <Text style={styles.activeText}>Active</Text>
                   </View>
                   <Text style={styles.metaInfo}>
-                    {activeListing.views} views • {activeListing.inquiries} inquiries
+                    {activeListing.views} views • {activeListing.inquiries}{" "}
+                    inquiries
                   </Text>
                 </View>
               </View>
@@ -333,9 +337,17 @@ export default function RentMachine({ navigation }) {
           )}
 
           {/* List Your Machine Button */}
-          <TouchableOpacity style={styles.listProductBtn} onPress={() => setModalVisible(true)}>
+          <TouchableOpacity
+            style={styles.listProductBtn}
+            onPress={() => setModalVisible(true)}
+          >
             <Text style={styles.listProductText}>List Your Machine</Text>
-            <FontAwesome5 name="plus" size={16} color="#fff" style={{ marginLeft: 8 }} />
+            <FontAwesome5
+              name="plus"
+              size={16}
+              color="#fff"
+              style={{ marginLeft: 8 }}
+            />
           </TouchableOpacity>
 
           {/* Available Equipment */}
@@ -360,10 +372,15 @@ export default function RentMachine({ navigation }) {
                   <Text style={styles.productTitle}>{item.name}</Text>
                   <Text style={styles.productSub}>{item.desc}</Text>
                   <Text style={styles.productMeta}>
-                    {item.price} • {item.available}{item.unit} available
+                    {item.price} • {item.available}
+                    {item.unit} available
                   </Text>
                   <View style={styles.distanceRow}>
-                    <FontAwesome5 name="map-marker-alt" size={12} color="#999" />
+                    <FontAwesome5
+                      name="map-marker-alt"
+                      size={12}
+                      color="#999"
+                    />
                     <Text style={styles.distance}>{item.distance} away</Text>
                   </View>
                 </View>
@@ -382,15 +399,17 @@ export default function RentMachine({ navigation }) {
                   <TouchableOpacity
                     style={[
                       styles.rentButton,
-                      item.available <= 0 && styles.rentButtonDisabled
+                      item.available <= 0 && styles.rentButtonDisabled,
                     ]}
                     onPress={() => onRentPress(item)}
                     disabled={item.available <= 0}
                   >
-                    <Text style={[
-                      styles.rentButtonText,
-                      item.available <= 0 && styles.rentButtonTextDisabled
-                    ]}>
+                    <Text
+                      style={[
+                        styles.rentButtonText,
+                        item.available <= 0 && styles.rentButtonTextDisabled,
+                      ]}
+                    >
                       {item.available <= 0 ? "Not Available" : "Rent Now"}
                     </Text>
                   </TouchableOpacity>
@@ -401,7 +420,9 @@ export default function RentMachine({ navigation }) {
             <View style={styles.emptyState}>
               <FontAwesome5 name="tools" size={48} color="#ddd" />
               <Text style={styles.emptyStateText}>No equipment found</Text>
-              <Text style={styles.emptyStateSubtext}>Try adjusting your search or filters</Text>
+              <Text style={styles.emptyStateSubtext}>
+                Try adjusting your search or filters
+              </Text>
             </View>
           )}
 
@@ -410,11 +431,7 @@ export default function RentMachine({ navigation }) {
           {messages.map((msg) => (
             <TouchableOpacity key={msg.id} style={styles.msgRow}>
               <View style={styles.avatarContainer}>
-                <FontAwesome5
-                  name="user"
-                  size={16}
-                  color="#fff"
-                />
+                <FontAwesome5 name="user" size={16} color="#fff" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.msgName}>{msg.name}</Text>
@@ -484,8 +501,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
     backgroundColor: "#f8f9fa",
   },
   searchContainer: {
@@ -507,13 +524,13 @@ const styles = StyleSheet.create({
   },
   iconLeft: { marginRight: 10 },
   iconRight: { marginLeft: 10 },
-  searchInput: { 
-    flex: 1, 
-    height: 44, 
-    fontSize: 16, 
+  searchInput: {
+    flex: 1,
+    height: 44,
+    fontSize: 16,
     color: "#333",
   },
-  chipScroll: { 
+  chipScroll: {
     marginBottom: 16,
   },
   chip: {
@@ -529,16 +546,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1,
   },
-  chipActive: { 
+  chipActive: {
     backgroundColor: "#4CAF50",
     elevation: 2,
   },
-  chipLabel: { 
+  chipLabel: {
     color: "#666",
     fontSize: 14,
     fontWeight: "500",
   },
-  chipActiveLabel: { 
+  chipActiveLabel: {
     color: "#fff",
     fontWeight: "600",
   },
@@ -569,27 +586,27 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginRight: 14,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
   },
   listingImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
-  listingTitle: { 
-    fontSize: 16, 
-    fontWeight: "bold", 
+  listingTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
     color: "#333",
     marginBottom: 4,
   },
-  listingSub: { 
-    color: "#666", 
+  listingSub: {
+    color: "#666",
     marginBottom: 6,
     fontSize: 14,
   },
-  metaRow: { 
-    flexDirection: "row", 
+  metaRow: {
+    flexDirection: "row",
     alignItems: "center",
   },
   activeStatus: {
@@ -604,8 +621,8 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
     fontWeight: "600",
   },
-  metaInfo: { 
-    fontSize: 12, 
+  metaInfo: {
+    fontSize: 12,
     color: "#999",
   },
   listProductBtn: {
@@ -622,15 +639,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
-  listProductText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
+  listProductText: {
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
-  viewAll: { 
-    color: "#4CAF50", 
-    fontWeight: "600", 
-    fontSize: 14, 
+  viewAll: {
+    color: "#4CAF50",
+    fontWeight: "600",
+    fontSize: 14,
     marginRight: 16,
   },
   rowBetween: {
@@ -657,27 +674,27 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginRight: 14,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
   },
   productImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
-  productTitle: { 
-    fontWeight: "bold", 
+  productTitle: {
+    fontWeight: "bold",
     fontSize: 16,
     color: "#333",
     marginBottom: 2,
   },
-  productSub: { 
+  productSub: {
     color: "#666",
     fontSize: 14,
     marginBottom: 4,
   },
-  productMeta: { 
-    fontSize: 13, 
+  productMeta: {
+    fontSize: 13,
     color: "#4CAF50",
     fontWeight: "600",
     marginBottom: 4,
@@ -686,8 +703,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  distance: { 
-    fontSize: 12, 
+  distance: {
+    fontSize: 12,
     color: "#999",
     marginLeft: 4,
   },
@@ -755,21 +772,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 12,
   },
-  msgName: { 
-    fontWeight: "bold", 
+  msgName: {
+    fontWeight: "bold",
     color: "#333",
     fontSize: 15,
     marginBottom: 2,
   },
-  msgTxt: { 
-    color: "#666", 
+  msgTxt: {
+    color: "#666",
     fontSize: 14,
   },
   msgTimeContainer: {
     alignItems: "flex-end",
   },
-  msgTime: { 
-    color: "#999", 
+  msgTime: {
+    color: "#999",
     fontSize: 12,
     marginBottom: 4,
   },

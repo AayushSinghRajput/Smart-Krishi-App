@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { getWeather, getWeatherForecast } from "../services/weatherService";
+// import { getWeather, getWeatherForecast } from "../services/weatherService";
+import { getWeather,getWeatherForecast } from "../services/rapidweatherService";
 import { translateWeather } from "../constants/weatherTranslations";
 import { toNepaliDigits } from "../constants/numberTranslator";
 

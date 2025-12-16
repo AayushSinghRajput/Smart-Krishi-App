@@ -23,6 +23,7 @@ export default function Profile() {
       'My Crops': '/my-crops',
       'Crop Health':'/crop-health',
       'My Orders': '/RentMachine',
+      'News':'/News',
       'Notifications': '/(tabs)/alerts',
       'Billing & Payments': '/billing',
       'Settings': '/settings',
