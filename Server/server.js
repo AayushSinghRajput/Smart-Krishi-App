@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 
 const connectDB = require('./config/db');
+const startScheduler = require("./config/scheduler");
 require('./cron/dailyScraper');
 
 const authRoutes = require('./routes/authRoutes');
@@ -11,7 +12,8 @@ const analysisRoutes = require('./routes/analysisRoutes');
 const productRoutes = require('./routes/productRoutes');
 const machineRoutes = require('./routes/machineRoutes');
 const newsRoutes = require('./routes/newsRoutes');
-
+const priceRoutes = require("./routes/priceRoutes");
+const prebookingRoutes = require("./routes/prebookingRoutes");
 dotenv.config();
 const app = express();
 
@@ -23,6 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 // Connect to MongoDB
 connectDB();
 
+startScheduler();
+
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -32,6 +36,8 @@ app.use('/api/analysis', analysisRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/machines', machineRoutes);
 app.use('/api/news', newsRoutes);
+app.use("/api/prices", priceRoutes);
+app.use("/api/prebooking",prebookingRoutes);
 
 // Root route
 app.get('/', (req, res) => {

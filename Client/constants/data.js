@@ -251,7 +251,63 @@ export const alertsList = [
     time: "5d ago",
     icon: "calendar-outline",
   },
+  {
+    id: "6",
+    title: "Livestock Vaccination Reminder",
+    titleNP: "पाल्तु जनावरको खोप सम्झना",
+    description:
+      "Scheduled vaccinations for cattle and poultry are due. Ensure timely inoculation to prevent diseases.",
+    descriptionNP:
+      "गाई, कुखुरा र अन्य पाल्तु जनावरहरूको खोप समयमै गर्नुहोस्। रोग रोकथामका लागि आवश्यक छ।",
+    time: "4h ago",
+    icon: "medkit-outline",
+  },
+  {
+    id: "7",
+    title: "Drought Alert for Dry Zones",
+    titleNP: "सूखा चेतावनी: शुष्क क्षेत्रहरू",
+    description:
+      "Water levels in reservoirs are critically low. Farmers should plan irrigation carefully.",
+    descriptionNP:
+      "जलाशयमा पानीको स्तर निकै कम छ। कृषकहरूले सिँचाइ योजना सावधानीपूर्वक गर्नुहोस्।",
+    time: "12h ago",
+    icon: "water-outline",
+  },
+  {
+    id: "8",
+    title: "Crop Disease: Blight in Potatoes",
+    titleNP: "बाली रोग: आलुमा ब्लाइट",
+    description:
+      "Potato crops affected by late blight. Remove infected plants and treat the rest promptly.",
+    descriptionNP:
+      "आलु बालीमा लेट ब्लाइट रोग देखिएको छ। संक्रमित बोटहरू हटाउनुहोस् र बाँकी बाली उपचार गर्नुहोस्।",
+    time: "6h ago",
+    icon: "bug-outline",
+  },
+  {
+    id: "9",
+    title: "Poultry Feed Shortage",
+    titleNP: "कुखुरा खाध्य पदार्थ अभाव",
+    description:
+      "Local markets report shortage of poultry feed. Plan feeding schedules carefully.",
+    descriptionNP:
+      "स्थानीय बजारमा कुखुरा खाध्य पदार्थ कम भएको छ। खाने तालिका सावधानीपूर्वक बनाउनुहोस्।",
+    time: "2d ago",
+    icon: "egg-outline",
+  },
+  {
+    id: "10",
+    title: "Fertilizer Quality Alert",
+    titleNP: "मलको गुणस्तर चेतावनी",
+    description:
+      "Some batches of fertilizer found below quality standards. Verify before use.",
+    descriptionNP:
+      "केही मलको ब्याच गुणस्तरमा कम भएको पत्ता लाग्यो। प्रयोग अघि जाँच गर्नुहोस्।",
+    time: "1d ago",
+    icon: "leaf-outline",
+  },
 ];
+
 
 export const profileInfo = {
   name: "Kriti Sanon",
